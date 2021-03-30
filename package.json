@@ -1,7 +1,7 @@
 {
   "name": "@metamask/test-dapp",
   "version": "4.0.1",
-  "description": "A simple dapp used in MetaMask e2e tests.",
+  "description": "A simple dapp used in Starcoin e2e tests.",
   "engines": {
     "node": ">= 10"
   },
@@ -19,15 +19,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MetaMask/test-dapp.git"
+    "url": "git+https://github.com/Starcoin/test-dapp.git"
   },
   "files": [
     "dist/"
   ],
-  "author": "MetaMask",
+  "author": "Starcoin",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/MetaMask/test-dapp/issues"
+    "url": "https://github.com/Starcoin/test-dapp/issues"
   },
   "homepage": "https://metamask.github.io/test-dapp",
   "dependencies": {},
@@ -43,6 +43,7 @@
     "eth-sig-util": "^2.5.3",
     "ethereumjs-util": "^5.1.1",
     "ethers": "^5.0.32",
+    "@starcoin/starcoin": "^0.1.5",
     "gh-pages": "^3.1.0",
     "prettier": "^2.0.5",
     "webpack": "^4.43.0",
