@@ -15,7 +15,7 @@ module.exports = {
   },
   devServer: {
     contentBase: DIST,
-    port: 9011,
+    port: 9022,
     writeToDisk: true,
   },
   plugins: [
