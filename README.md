@@ -2,6 +2,8 @@
 
 This is a simple test dapp for use in Starcoin e2e tests and manual QA.
 
+Currently hosted [here](https://starcoin-test-dapp.vercel.app).
+
 ## Development
 
 1. Install dependencies
@@ -21,7 +23,7 @@ yarn start
 
 ---
 
-# Legacy
+# Legacy (MetaMask test app)
 
 Currently hosted [here](https://metamask.github.io/test-dapp/).
 
