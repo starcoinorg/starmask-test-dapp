@@ -21,6 +21,7 @@ const { isMetaMaskInstalled } = MetaMaskOnboarding
 // Dapp Status Section
 const networkDiv = document.getElementById('network')
 const chainIdDiv = document.getElementById('chainId')
+const latestBlockDiv = document.getElementById('latestBlock')
 const accountsDiv = document.getElementById('accounts')
 
 // Basic Actions Section
@@ -97,6 +98,9 @@ const initialize = async () => {
       piggybankBytecode,
       ethersProvider.getSigner(),
     )
+    // Starcoin network
+    const nodeUrl = "http://barnard.seed.starcoin.org:9850"
+    starcoinProvider = new providers.JsonrpcProvider(nodeUrl);
   } catch (error) {
     console.error(error)
   }
@@ -864,17 +868,37 @@ const initialize = async () => {
     networkDiv.innerHTML = networkId
   }
 
+  function handleLatestBlock (blockNumber) {
+    latestBlockDiv.innerHTML = blockNumber
+  }
+
   async function getNetworkAndChainId () {
     try {
+      /*
       const chainId = await ethereum.request({
         method: 'eth_chainId',
       })
+      */
+      const networkInfo = await starcoinProvider.getNetwork()
+      const { chainId } = networkInfo
       handleNewChain(chainId)
 
+      /*
       const networkId = await ethereum.request({
         method: 'net_version',
       })
+      */
+      const { name: networkId } = networkInfo
       handleNewNetwork(networkId)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  async function getLatestBlockNumber () {
+    try {
+      const latestBlock = await starcoinProvider.getBlockNumber() || 123
+      handleLatestBlock(latestBlock)
     } catch (err) {
       console.error(err)
     }
@@ -886,6 +910,7 @@ const initialize = async () => {
 
     ethereum.autoRefreshOnNetworkChange = false
     getNetworkAndChainId()
+    getLatestBlockNumber()
 
     ethereum.on('chainChanged', handleNewChain)
     ethereum.on('networkChanged', handleNewNetwork)
