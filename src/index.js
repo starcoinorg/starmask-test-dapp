@@ -18,6 +18,10 @@ const forwarderOrigin = currentUrl.hostname === 'localhost'
 
 const { isMetaMaskInstalled } = MetaMaskOnboarding
 
+// Node URL Section
+const nodeURLInput = document.getElementById('nodeURLInput')
+const connectNodeButton = document.getElementById('connectNodeButton')
+
 // Dapp Status Section
 const networkDiv = document.getElementById('network')
 const chainIdDiv = document.getElementById('chainId')
@@ -99,8 +103,8 @@ const initialize = async () => {
       ethersProvider.getSigner(),
     )
     // Starcoin network
-    const nodeUrl = "http://barnard.seed.starcoin.org:9850"
-    starcoinProvider = new providers.JsonrpcProvider(nodeUrl);
+    // const nodeURL = "http://barnard.seed.starcoin.org:9850"
+    // starcoinProvider = new providers.JsonrpcProvider(nodeURL);
   } catch (error) {
     console.error(error)
   }
@@ -148,6 +152,17 @@ const initialize = async () => {
     onboarding.startOnboarding()
   }
 
+  const onClickConnectNode = async () => {
+    try {
+      let nodeURL = document.getElementById('nodeURLInput').value
+      handleNodeURL(nodeURL)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  connectNodeButton.onclick = onClickConnectNode
+
   const onClickConnect = async () => {
     try {
       const newAccounts = await ethereum.request({
@@ -158,6 +173,7 @@ const initialize = async () => {
       console.error(error)
     }
   }
+
 
   const clearTextDisplays = () => {
     encryptionKeyDisplay.innerText = ''
@@ -848,6 +864,17 @@ const initialize = async () => {
     } catch (err) {
       console.error(err)
       signTypedDataV4VerifyResult.innerHTML = `Error: ${err.message}`
+    }
+  }
+
+  function handleNodeURL (nodeURL) {
+    try {
+      starcoinProvider = new providers.JsonrpcProvider(nodeURL);
+      getNetworkAndChainId()
+      getLatestBlockNumber()
+      alert('Node Connected')
+    } catch (err) {
+      console.error(err)
     }
   }
 
