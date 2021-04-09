@@ -10,13 +10,16 @@ let ethersProvider
 let starcoinProvider
 let hstFactory
 let piggybankFactory
+let nodeURL
+let isNodeConnected
 
 const currentUrl = new URL(window.location.href)
 const forwarderOrigin = currentUrl.hostname === 'localhost'
   ? 'http://localhost:9010'
   : undefined
 
-const { isMetaMaskInstalled } = MetaMaskOnboarding
+// const { isMetaMaskInstalled } = MetaMaskOnboarding
+const isMetaMaskInstalled = true 
 
 // Node URL Section
 const nodeURLInput = document.getElementById('nodeURLInput')
@@ -91,6 +94,7 @@ const addEthereumChain = document.getElementById('addEthereumChain')
 const initialize = async () => {
   try {
     // We must specify the network as 'any' for ethers to allow network changes
+    /*
     ethersProvider = new ethers.providers.Web3Provider(window.ethereum, 'any')
     hstFactory = new ethers.ContractFactory(
       hstAbi,
@@ -102,6 +106,7 @@ const initialize = async () => {
       piggybankBytecode,
       ethersProvider.getSigner(),
     )
+    */
     // Starcoin network
     // const nodeURL = "http://barnard.seed.starcoin.org:9850"
     // starcoinProvider = new providers.JsonrpcProvider(nodeURL);
@@ -154,8 +159,10 @@ const initialize = async () => {
 
   const onClickConnectNode = async () => {
     try {
-      let nodeURL = document.getElementById('nodeURLInput').value
+      let inputNodeURL = document.getElementById('nodeURLInput').value
+      nodeURL = inputNodeURL
       handleNodeURL(nodeURL)
+      isNodeConnected = true
     } catch (error) {
       console.error(error)
     }
@@ -404,10 +411,16 @@ const initialize = async () => {
 
     getAccountsButton.onclick = async () => {
       try {
+        /* 
         const _accounts = await ethereum.request({
           method: 'eth_accounts',
         })
-        getAccountsResults.innerHTML = _accounts[0] || 'Not able to get accounts'
+        */
+        const _accounts = await starcoinProvider.listAccounts()
+        let template = "<li class=\"list-group-item\">~item~</li>";
+        _accounts.forEach(function(account) {
+          getAccountsResults.insertAdjacentHTML("beforeend", template.replace(/~item~/g, account));
+        })
       } catch (err) {
         console.error(err)
         getAccountsResults.innerHTML = `Error: ${err.message}`
@@ -872,7 +885,10 @@ const initialize = async () => {
       starcoinProvider = new providers.JsonrpcProvider(nodeURL);
       getNetworkAndChainId()
       getLatestBlockNumber()
-      alert('Node Connected')
+      getAccoutsList()
+      connectNodeButton.innerText = 'Node Connected'
+      connectNodeButton.disabled = true
+      // alert('Node Connected')
     } catch (err) {
       console.error(err)
     }
@@ -880,8 +896,9 @@ const initialize = async () => {
 
   function handleNewAccounts (newAccounts) {
     accounts = newAccounts
-    accountsDiv.innerHTML = accounts
-    if (isMetaMaskConnected()) {
+    // accountsDiv.innerHTML = accounts
+    // if (isMetaMaskConnected()) {
+    if (true) {
       initializeAccountButtons()
     }
     updateButtons()
@@ -931,9 +948,19 @@ const initialize = async () => {
     }
   }
 
+  async function getAccoutsList () {
+    try {
+      const accountsList = await starcoinProvider.listAccounts()
+      handleNewAccounts(accountsList)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   updateButtons()
 
-  if (isMetaMaskInstalled()) {
+  // if (isMetaMaskInstalled()) {
+  if (isNodeConnected) {
 
     ethereum.autoRefreshOnNetworkChange = false
     getNetworkAndChainId()
@@ -944,9 +971,13 @@ const initialize = async () => {
     ethereum.on('accountsChanged', handleNewAccounts)
 
     try {
+      /*
       const newAccounts = await ethereum.request({
         method: 'eth_accounts',
       })
+      */
+      console.log('new accounts get')
+      const newAccounts = await starcoinProvider.listAccounts()
       handleNewAccounts(newAccounts)
     } catch (err) {
       console.error('Error on init when getting accounts', err)
