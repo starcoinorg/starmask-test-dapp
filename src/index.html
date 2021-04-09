@@ -77,11 +77,13 @@
             </p>
           </div>
 
+          <!--
           <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
             <p class="info-text alert alert-success">
               Accounts: <span id="accounts"></span>
             </p>
           </div>
+          -->
         </div>
       </section>
 
@@ -94,6 +96,7 @@
                   Basic Actions
                 </h4>
 
+                <!--  
                 <button
                   class="btn btn-primary btn-lg btn-block mb-3"
                   id="connectButton"
@@ -101,17 +104,20 @@
                 >
                   Connect
                 </button>
+                -->
 
                 <button
                   class="btn btn-primary btn-lg btn-block mb-3"
                   id="getAccounts"
                 >
-                  eth_accounts
+                  Get Starcoin Accounts
                 </button>
 
-                <p class="info-text alert alert-secondary">
-                  eth_accounts result: <span id="getAccountsResult"></span>
-                </p>
+                <div class="info-text alert alert-secondary">
+                  <h5>Starcoin accounts on the Node:</h5> 
+                  <ul class="list-group" id="getAccountsResult">
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
