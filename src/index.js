@@ -19,7 +19,7 @@ const forwarderOrigin = currentUrl.hostname === 'localhost'
   : undefined
 
 // const { isMetaMaskInstalled } = MetaMaskOnboarding
-const isMetaMaskInstalled = true 
+const isMetaMaskInstalled = () => { return true }
 
 // Node URL Section
 const nodeURLInput = document.getElementById('nodeURLInput')
@@ -29,17 +29,19 @@ const connectNodeButton = document.getElementById('connectNodeButton')
 const networkDiv = document.getElementById('network')
 const chainIdDiv = document.getElementById('chainId')
 const latestBlockDiv = document.getElementById('latestBlock')
-const accountsDiv = document.getElementById('accounts')
+// const accountsDiv = document.getElementById('accounts')
 
 // Basic Actions Section
-const onboardButton = document.getElementById('connectButton')
+// const onboardButton = document.getElementById('connectButton')
 const getAccountsButton = document.getElementById('getAccounts')
 const getAccountsResults = document.getElementById('getAccountsResult')
 
 // Permissions Actions Section
+/*
 const requestPermissionsButton = document.getElementById('requestPermissions')
 const getPermissionsButton = document.getElementById('getPermissions')
 const permissionsResult = document.getElementById('permissionsResult')
+*/
 
 // Contract Section
 const deployButton = document.getElementById('deployButton')
@@ -152,8 +154,10 @@ const initialize = async () => {
   const isMetaMaskConnected = () => accounts && accounts.length > 0
 
   const onClickInstall = () => {
+    /*
     onboardButton.innerText = 'Onboarding in progress'
     onboardButton.disabled = true
+    */
     onboarding.startOnboarding()
   }
 
@@ -178,6 +182,25 @@ const initialize = async () => {
       handleNewAccounts(newAccounts)
     } catch (error) {
       console.error(error)
+    }
+  }
+
+  getAccountsButton.onclick = async () => {
+    try {
+      /* 
+      const _accounts = await ethereum.request({
+        method: 'eth_accounts',
+      })
+      */
+      const _accounts = await starcoinProvider.listAccounts()
+      accounts = _accounts
+      let template = "<li class=\"list-group-item\">~item~</li>";
+      _accounts.forEach(function(account) {
+        getAccountsResults.insertAdjacentHTML("beforeend", template.replace(/~item~/g, account));
+      })
+    } catch (err) {
+      console.error(err)
+      getAccountsResults.innerHTML = `Error: ${err.message}`
     }
   }
 
@@ -213,21 +236,27 @@ const initialize = async () => {
     if (isMetaMaskInstalled()) {
       addEthereumChain.disabled = false
     } else {
+      /*
       onboardButton.innerText = 'Click here to install MetaMask!'
       onboardButton.onclick = onClickInstall
       onboardButton.disabled = false
+      */
     }
 
     if (isMetaMaskConnected()) {
+      /*
       onboardButton.innerText = 'Connected'
       onboardButton.disabled = true
+      */
       if (onboarding) {
         onboarding.stopOnboarding()
       }
     } else {
+      /*
       onboardButton.innerText = 'Connect'
       onboardButton.onclick = onClickConnect
       onboardButton.disabled = false
+      */
     }
   }
 
@@ -384,6 +413,7 @@ const initialize = async () => {
      * Permissions
      */
 
+    /*
     requestPermissionsButton.onclick = async () => {
       try {
         const permissionsArray = await ethereum.request({
@@ -408,24 +438,8 @@ const initialize = async () => {
         permissionsResult.innerHTML = `Error: ${err.message}`
       }
     }
+    */
 
-    getAccountsButton.onclick = async () => {
-      try {
-        /* 
-        const _accounts = await ethereum.request({
-          method: 'eth_accounts',
-        })
-        */
-        const _accounts = await starcoinProvider.listAccounts()
-        let template = "<li class=\"list-group-item\">~item~</li>";
-        _accounts.forEach(function(account) {
-          getAccountsResults.insertAdjacentHTML("beforeend", template.replace(/~item~/g, account));
-        })
-      } catch (err) {
-        console.error(err)
-        getAccountsResults.innerHTML = `Error: ${err.message}`
-      }
-    }
 
     /**
      * Encrypt / Decrypt
@@ -885,7 +899,7 @@ const initialize = async () => {
       starcoinProvider = new providers.JsonrpcProvider(nodeURL);
       getNetworkAndChainId()
       getLatestBlockNumber()
-      getAccoutsList()
+      getAccountsList()
       connectNodeButton.innerText = 'Node Connected'
       connectNodeButton.disabled = true
       // alert('Node Connected')
@@ -898,9 +912,11 @@ const initialize = async () => {
     accounts = newAccounts
     // accountsDiv.innerHTML = accounts
     // if (isMetaMaskConnected()) {
+    /*
     if (true) {
       initializeAccountButtons()
     }
+    */
     updateButtons()
   }
 
@@ -948,10 +964,11 @@ const initialize = async () => {
     }
   }
 
-  async function getAccoutsList () {
+  async function getAccountsList () {
     try {
       const accountsList = await starcoinProvider.listAccounts()
       handleNewAccounts(accountsList)
+      console.log({accountsList})
     } catch (err) {
       console.error(err)
     }
