@@ -10,7 +10,7 @@ Online verison will only work if your Starcoin node URL protocol is HTTPS.
 
 If you run it on your local machine, you could use a node URL with HTTP protocol.
 
-Recommended way to add HTTPS to your Starcoin node is using [Caddy](https://caddyserver.com). Install it on you computer, create a Caddyfile in current directory, and run `caddy start`. Caddy will proxy requests to your node.
+Recommended way to add HTTPS to your Starcoin node is using [Caddy](https://caddyserver.com). Install it on your computer, create a Caddyfile in current directory, and run `caddy start`. Caddy will proxy requests to your node.
 
 Example Caddyfile:
 

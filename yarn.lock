@@ -411,10 +411,10 @@
   dependencies:
     mkdirp "^1.0.4"
 
-"@starcoin/starcoin@^0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@starcoin/starcoin/-/starcoin-0.1.6.tgz#56a1a8ece00f663496e0d7b46e40dea4520cb2f4"
-  integrity sha512-UTBaWvDxFBI7D24e92GYbF1b2yPIoQbPNa2R+ak04RPcMN6MfGJPDe8lJ96OfGRp7wSDGNbIyvhYXF0d4nPxwA==
+"@starcoin/starcoin@^0.1.7":
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/@starcoin/starcoin/-/starcoin-0.1.7.tgz#dca8f6cb5ce1b22cab7714be47feeb5749a25371"
+  integrity sha512-Sz5jKUO7mYHC0s6KEEp5Te/vYRT1umyyqRbxNqh+Scq4gy3bqX8SX5CDeGC4bpCUePnI1UyX6jlbDTIUcfZhBg==
   dependencies:
     "@ethersproject/basex" "^5.0.4"
     "@ethersproject/bignumber" "^5.0"

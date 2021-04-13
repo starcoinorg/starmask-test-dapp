@@ -165,6 +165,7 @@ const initialize = async () => {
     try {
       let inputNodeURL = document.getElementById('nodeURLInput').value
       nodeURL = inputNodeURL
+      console.log({nodeURL})
       handleNodeURL(nodeURL)
       isNodeConnected = true
     } catch (error) {
@@ -968,7 +969,7 @@ const initialize = async () => {
     try {
       const accountsList = await starcoinProvider.listAccounts()
       handleNewAccounts(accountsList)
-      console.log({accountsList})
+      // console.log({accountsList})
     } catch (err) {
       console.error(err)
     }
