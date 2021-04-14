@@ -50,7 +50,8 @@ const withdrawButton = document.getElementById('withdrawButton')
 const contractStatus = document.getElementById('contractStatus')
 
 // Send Eth Section
-const sendButton = document.getElementById('sendButton')
+// const sendButton = document.getElementById('sendButton')
+const sendSTCButton = document.getElementById('sendSTCButton')
 
 // Send Tokens Section
 const tokenAddress = document.getElementById('tokenAddress')
@@ -93,7 +94,7 @@ const signTypedDataV4VerifyResult = document.getElementById('signTypedDataV4Veri
 // Miscellaneous
 const addEthereumChain = document.getElementById('addEthereumChain')
 
-const initialize = async () => {
+const initialize = async (nodeURL) => {
   try {
     // We must specify the network as 'any' for ethers to allow network changes
     /*
@@ -111,7 +112,8 @@ const initialize = async () => {
     */
     // Starcoin network
     // const nodeURL = "http://barnard.seed.starcoin.org:9850"
-    // starcoinProvider = new providers.JsonrpcProvider(nodeURL);
+    starcoinProvider = new providers.JsonrpcProvider(nodeURL);
+    console.log('initialized provider')
   } catch (error) {
     console.error(error)
   }
@@ -130,7 +132,8 @@ const initialize = async () => {
     deployButton,
     depositButton,
     withdrawButton,
-    sendButton,
+    // sendButton,
+    sendSTCButton,
     createToken,
     transferTokens,
     approveTokens,
@@ -222,7 +225,8 @@ const initialize = async () => {
       clearTextDisplays()
     } else {
       deployButton.disabled = false
-      sendButton.disabled = false
+      // sendButton.disabled = false
+      sendSTCButton.disabled = false
       createToken.disabled = false
       personalSign.disabled = false
       signTypedData.disabled = false
@@ -332,6 +336,7 @@ const initialize = async () => {
      * Sending ETH
      */
 
+    /*
     sendButton.onclick = async () => {
       const result = await ethersProvider.getSigner().sendTransaction({
         to: '0x2f318C334780961FB129D2a6c30D0763d9a5C970',
@@ -340,6 +345,56 @@ const initialize = async () => {
         gasPrice: 20000000000,
       })
       console.log(result)
+    }
+    */
+
+    sendSTCButton.onclick = async () => {
+      /*
+      const result = await starcoinProvider.getSigner().sendTransaction({
+        to: '0x2f318C334780961FB129D2a6c30D0763d9a5C970',
+        value: '0x29a2241af62c0000',
+        gasLimit: 21000,
+        gasPrice: 20000000000,
+      })
+      console.log(result)
+      */
+      console.log('send stc button clicked')
+      const fromAccount = document.getElementById('fromAccountInput').value
+      const toAccount = document.getElementById('toAccountInput').value
+      const sendAmount = document.getElementById('amountInput').value
+      const sendAmountString = sendAmount.toString() + 'u128'
+      console.log({sendAmountString})
+      const unlockPassword = document.getElementById('passwordInput').value 
+      const signer = await starcoinProvider.getSigner(fromAccount);
+      await signer.unlock(unlockPassword);
+      const txnRequest = {
+        script: {
+          code: '0x1::TransferScripts::peer_to_peer',
+          type_args: ['0x1::STC::STC'],
+          args: [toAccount, 'x""', sendAmountString],
+        }
+      };
+      console.log({txnRequest})
+      const txnOutput = await starcoinProvider.dryRun(txnRequest);
+      console.log({txnOutput})
+
+      const balanceBefore = await starcoinProvider.getBalance('0xf5ae543d68bfa9ff62f2f9b26f6f058d');
+      console.log({balanceBefore})
+
+      const txn = await signer.sendTransaction(txnRequest);
+      console.log({txn})
+      const txnInfo = await txn.wait(1);
+      const balance = await starcoinProvider.getBalance('0xf5ae543d68bfa9ff62f2f9b26f6f058d')
+      console.log({balance})
+      /*
+      if (balanceBefore !== undefined) {
+        // @ts-ignore
+        const diff = balance - balanceBefore;
+        expect(diff).toBe(100000);
+      } else {
+        expect(balance).toBe(100000);
+      }
+      */
     }
 
     /**
@@ -897,6 +952,7 @@ const initialize = async () => {
 
   function handleNodeURL (nodeURL) {
     try {
+      initialize(nodeURL)
       starcoinProvider = new providers.JsonrpcProvider(nodeURL);
       getNetworkAndChainId()
       getLatestBlockNumber()
@@ -913,11 +969,9 @@ const initialize = async () => {
     accounts = newAccounts
     // accountsDiv.innerHTML = accounts
     // if (isMetaMaskConnected()) {
-    /*
     if (true) {
       initializeAccountButtons()
     }
-    */
     updateButtons()
   }
 
