@@ -89,6 +89,7 @@
 
       <section>
         <div class="row d-flex justify-content-center">
+
           <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
             <div class="card">
               <div class="card-body">
@@ -109,6 +110,7 @@
                 <button
                   class="btn btn-primary btn-lg btn-block mb-3"
                   id="getAccounts"
+                  disabled
                 >
                   Get Starcoin Accounts
                 </button>
@@ -121,6 +123,40 @@
               </div>
             </div>
           </div>
+
+          <div
+            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
+          >
+            <div class="card full-width">
+              <div class="card-body">
+                <h4 class="card-title">
+                  Account Actions
+                </h4>
+
+                <h5 class="card-title">
+                  Account Address
+                </h5>
+                <div class="form-outline mb-3">
+                  <input id="accountAddressInput" type="text" id="form1" class="form-control form-control-lg" />
+                </div>
+
+                <button
+                  class="btn btn-primary btn-lg btn-block mb-3"
+                  id="getBalanceButton"
+                >
+                  Get Balance
+                </button>
+                <hr />
+                <div class="text-center">
+                  <p><h5>Account Balance: </h5>
+                  </p>
+                  <h1><span id="accountBalanceResult" class="badge bg-success">NaN</span></h1>
+                  <h6>STC</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
