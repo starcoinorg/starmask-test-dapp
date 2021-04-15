@@ -30,6 +30,7 @@ const networkDiv = document.getElementById('network')
 const chainIdDiv = document.getElementById('chainId')
 const latestBlockDiv = document.getElementById('latestBlock')
 // const accountsDiv = document.getElementById('accounts')
+const accountBalanceDiv = document.getElementById('accountBalanceResult')
 
 // Basic Actions Section
 // const onboardButton = document.getElementById('connectButton')
@@ -42,6 +43,9 @@ const requestPermissionsButton = document.getElementById('requestPermissions')
 const getPermissionsButton = document.getElementById('getPermissions')
 const permissionsResult = document.getElementById('permissionsResult')
 */
+
+// Account Actions Section
+const getBalanceButton = document.getElementById('getBalanceButton')
 
 // Contract Section
 const deployButton = document.getElementById('deployButton')
@@ -133,6 +137,7 @@ const initialize = async (nodeURL) => {
     depositButton,
     withdrawButton,
     // sendButton,
+    getBalanceButton,
     sendSTCButton,
     createToken,
     transferTokens,
@@ -226,6 +231,7 @@ const initialize = async (nodeURL) => {
     } else {
       deployButton.disabled = false
       // sendButton.disabled = false
+      getBalanceButton.disabled = false
       sendSTCButton.disabled = false
       createToken.disabled = false
       personalSign.disabled = false
@@ -347,6 +353,23 @@ const initialize = async (nodeURL) => {
       console.log(result)
     }
     */
+    getBalanceButton.onclick = async () => {
+      console.log('get balance button clicked')
+      const accountAddress = document.getElementById('accountAddressInput').value
+      console.log({accountAddress})
+      const balance = await starcoinProvider.getBalance(accountAddress);
+      console.log({balance})
+      accountBalanceResult.innerText = (balance/1000000000).toFixed(9)
+      /*
+      if (balanceBefore !== undefined) {
+        // @ts-ignore
+        const diff = balance - balanceBefore;
+        expect(diff).toBe(100000);
+      } else {
+        expect(balance).toBe(100000);
+      }
+      */
+    }
 
     sendSTCButton.onclick = async () => {
       /*
@@ -959,6 +982,7 @@ const initialize = async (nodeURL) => {
       getAccountsList()
       connectNodeButton.innerText = 'Node Connected'
       connectNodeButton.disabled = true
+      getAccountsButton.disabled = false
       // alert('Node Connected')
     } catch (err) {
       console.error(err)
