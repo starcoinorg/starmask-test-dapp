@@ -36,18 +36,18 @@
             <div class="card">
               <div class="card-body">
                 <h3 class="card-title">
-                  Node URL (APIs opened)
+                  Node URL
                 </h3>
                 <div class="form-outline mb-3">
                   <input id="nodeURLInput" type="text" id="form1" class="form-control form-control-lg" />
                 </div>
-
                 <button
                   class="btn btn-primary btn-lg btn-block mb-3"
                   id="connectNodeButton"
                 >
                   Connect Node
                 </button>
+                <div><small>Note: Starcoin node APIs should be opened. HTTPS is needed for online version.</small></div>
               </div>
             </div>
           </div>
@@ -134,7 +134,7 @@
                 </h4>
 
                 <h5 class="card-title">
-                  Account Address
+                  Address
                 </h5>
                 <div class="form-outline mb-3">
                   <input id="accountAddressInput" type="text" id="form1" class="form-control form-control-lg" />
@@ -153,6 +153,54 @@
                   <h1><span id="accountBalanceResult" class="badge bg-success">NaN</span></h1>
                   <h6>STC</h6>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
+          >
+            <div class="card full-width">
+              <div class="card-body">
+                <h4 class="card-title">
+                  Send STC
+                </h4>
+
+                <h5 class="card-title">
+                  From
+                </h5>
+                <div class="form-outline mb-3">
+                  <input id="fromAccountInput" type="text" id="form1" class="form-control form-control-lg" />
+                </div>
+
+                <h5 class="card-title">
+                  To
+                </h5>
+                <div class="form-outline mb-3">
+                  <input id="toAccountInput" type="text" id="form1" class="form-control form-control-lg" />
+                </div>
+
+                <h5 class="card-title">
+                  Amount
+                </h5>
+                <div class="form-outline mb-3">
+                  <input id="amountInput" type="text" id="form1" class="form-control form-control-lg" />
+                </div>
+
+                <h5 class="card-title">
+                  Password to unlock <b>Sender</b>
+                </h5>
+                <div class="form-outline mb-3">
+                  <input id="passwordInput" type="text" id="form1" class="form-control form-control-lg" />
+                </div>
+
+                <button
+                  class="btn btn-primary btn-lg btn-block mb-3"
+                  id="sendSTCButton"
+                  disabled
+                >
+                  Send
+                </button>
               </div>
             </div>
           </div>
@@ -201,6 +249,7 @@
           >
             <div class="card full-width">
               <div class="card-body">
+                <!--
                 <h4 class="card-title">
                   Send STC
                 </h4>
@@ -241,6 +290,8 @@
                   Send
                 </button>
                 <hr />
+                -->
+
                 <h4 class="card-title">
                   Contract
                 </h4>
