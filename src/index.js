@@ -376,7 +376,7 @@ const initialize = async (nodeURL) => {
       console.log({balance})
       let convertedValue = toNormalizedDenomination['NanoSTC'](new BigNumber(balance, 10))
       convertedValue = toSpecifiedDenomination['STC'](convertedValue)
-      convertedValue = convertedValue.round(4, BigNumber.ROUND_HALF_DOWN)
+      convertedValue = convertedValue.round(9, BigNumber.ROUND_HALF_DOWN)
       accountBalanceResult.innerText = convertedValue
       /*
       if (balanceBefore !== undefined) {
