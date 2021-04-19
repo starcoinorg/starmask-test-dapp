@@ -406,27 +406,31 @@ const initialize = async (nodeURL) => {
       const sendAmountString = sendAmount.toString() + 'u128'
       console.log({sendAmountString})
       const unlockPassword = document.getElementById('passwordInput').value
-      const signer = await starcoinProvider.getSigner(fromAccount);
-      await signer.unlock(unlockPassword);
+      const signer = await starcoinProvider.getSigner(fromAccount)
+      await signer.unlock(unlockPassword)
       const txnRequest = {
         script: {
           code: '0x1::TransferScripts::peer_to_peer',
           type_args: ['0x1::STC::STC'],
           args: [toAccount, 'x""', sendAmountString],
         }
-      };
+      }
       console.log({txnRequest})
-      const txnOutput = await starcoinProvider.dryRun(txnRequest);
+      const txnOutput = await starcoinProvider.dryRun(txnRequest)
       console.log({txnOutput})
 
-      const balanceBefore = await starcoinProvider.getBalance('0xf5ae543d68bfa9ff62f2f9b26f6f058d');
+      const balanceBefore = await starcoinProvider.getBalance(toAccount)
       console.log({balanceBefore})
 
-      const txn = await signer.sendTransaction(txnRequest);
+      const txn = await signer.sendTransaction(txnRequest)
       console.log({txn})
-      const txnInfo = await txn.wait(1);
-      const balance = await starcoinProvider.getBalance('0xf5ae543d68bfa9ff62f2f9b26f6f058d')
+
+      const txnInfo = await txn.wait(1)
+      console.log({txnInfo})
+
+      const balance = await starcoinProvider.getBalance(toAccount)
       console.log({balance})
+
       /*
       if (balanceBefore !== undefined) {
         // @ts-ignore
