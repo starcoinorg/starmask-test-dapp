@@ -10,18 +10,18 @@ import { hstBytecode, hstAbi, piggybankBytecode, piggybankAbi } from './constant
 // Big Number Constants
 const BIG_NUMBER_WEI_MULTIPLIER = new BigNumber('1000000000000000000')
 const BIG_NUMBER_GWEI_MULTIPLIER = new BigNumber('1000000000')
-const BIG_NUMBER_ETH_MULTIPLIER = new BigNumber('1')
+const BIG_NUMBER_STC_MULTIPLIER = new BigNumber('1')
 
 const toNormalizedDenomination = {
   WEI: (bigNumber) => bigNumber.div(BIG_NUMBER_WEI_MULTIPLIER),
   GWEI: (bigNumber) => bigNumber.div(BIG_NUMBER_GWEI_MULTIPLIER),
-  STC: (bigNumber) => bigNumber.div(BIG_NUMBER_ETH_MULTIPLIER),
+  STC: (bigNumber) => bigNumber.div(BIG_NUMBER_STC_MULTIPLIER),
 }
 
 const toSpecifiedDenomination = {
   WEI: (bigNumber) => bigNumber.times(BIG_NUMBER_WEI_MULTIPLIER).round(),
   GWEI: (bigNumber) => bigNumber.times(BIG_NUMBER_GWEI_MULTIPLIER).round(9),
-  STC: (bigNumber) => bigNumber.times(BIG_NUMBER_ETH_MULTIPLIER).round(9),
+  STC: (bigNumber) => bigNumber.times(BIG_NUMBER_STC_MULTIPLIER).round(9),
 }
 
 let ethersProvider
