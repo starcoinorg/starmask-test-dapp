@@ -8,19 +8,16 @@ import BigNumber from 'bignumber.js'
 import { hstBytecode, hstAbi, piggybankBytecode, piggybankAbi } from './constants.json'
 
 // Big Number Constants
-const BIG_NUMBER_WEI_MULTIPLIER = new BigNumber('1000000000000000000')
-const BIG_NUMBER_GWEI_MULTIPLIER = new BigNumber('1000000000')
+const BIG_NUMBER_NANO_STC_MULTIPLIER = new BigNumber('1000000000')
 const BIG_NUMBER_STC_MULTIPLIER = new BigNumber('1')
 
 const toNormalizedDenomination = {
-  WEI: (bigNumber) => bigNumber.div(BIG_NUMBER_WEI_MULTIPLIER),
-  GWEI: (bigNumber) => bigNumber.div(BIG_NUMBER_GWEI_MULTIPLIER),
+  NanoSTC: (bigNumber) => bigNumber.div(BIG_NUMBER_NANO_STC_MULTIPLIER),
   STC: (bigNumber) => bigNumber.div(BIG_NUMBER_STC_MULTIPLIER),
 }
 
 const toSpecifiedDenomination = {
-  WEI: (bigNumber) => bigNumber.times(BIG_NUMBER_WEI_MULTIPLIER).round(),
-  GWEI: (bigNumber) => bigNumber.times(BIG_NUMBER_GWEI_MULTIPLIER).round(9),
+  NanoSTC: (bigNumber) => bigNumber.times(BIG_NUMBER_NANO_STC_MULTIPLIER).round(9),
   STC: (bigNumber) => bigNumber.times(BIG_NUMBER_STC_MULTIPLIER).round(9),
 }
 
@@ -377,7 +374,7 @@ const initialize = async (nodeURL) => {
       console.log({accountAddress})
       const balance = await starcoinProvider.getBalance(accountAddress) || 0
       console.log({balance})
-      let convertedValue = toNormalizedDenomination['GWEI'](new BigNumber(balance, 10))
+      let convertedValue = toNormalizedDenomination['NanoSTC'](new BigNumber(balance, 10))
       convertedValue = toSpecifiedDenomination['STC'](convertedValue)
       convertedValue = convertedValue.round(4, BigNumber.ROUND_HALF_DOWN)
       accountBalanceResult.innerText = convertedValue
