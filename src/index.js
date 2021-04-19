@@ -375,9 +375,9 @@ const initialize = async (nodeURL) => {
       console.log('get balance button clicked')
       const accountAddress = document.getElementById('accountAddressInput').value
       console.log({accountAddress})
-      const balance = await starcoinProvider.getBalance(accountAddress)
+      const balance = await starcoinProvider.getBalance(accountAddress) || 0
       console.log({balance})
-      let convertedValue = toNormalizedDenomination['STC'](new BigNumber(balance, 10))
+      let convertedValue = toNormalizedDenomination['GWEI'](new BigNumber(balance, 10))
       convertedValue = toSpecifiedDenomination['STC'](convertedValue)
       convertedValue = convertedValue.round(4, BigNumber.ROUND_HALF_DOWN)
       accountBalanceResult.innerText = convertedValue
