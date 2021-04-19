@@ -4,7 +4,25 @@ import { encrypt, recoverPersonalSignature, recoverTypedSignatureLegacy, recover
 import { ethers } from 'ethers'
 import { providers } from '@starcoin/starcoin'
 import { toChecksumAddress } from 'ethereumjs-util'
+import BigNumber from 'bignumber.js'
 import { hstBytecode, hstAbi, piggybankBytecode, piggybankAbi } from './constants.json'
+
+// Big Number Constants
+const BIG_NUMBER_WEI_MULTIPLIER = new BigNumber('1000000000000000000')
+const BIG_NUMBER_GWEI_MULTIPLIER = new BigNumber('1000000000')
+const BIG_NUMBER_ETH_MULTIPLIER = new BigNumber('1')
+
+const toNormalizedDenomination = {
+  WEI: (bigNumber) => bigNumber.div(BIG_NUMBER_WEI_MULTIPLIER),
+  GWEI: (bigNumber) => bigNumber.div(BIG_NUMBER_GWEI_MULTIPLIER),
+  STC: (bigNumber) => bigNumber.div(BIG_NUMBER_ETH_MULTIPLIER),
+}
+
+const toSpecifiedDenomination = {
+  WEI: (bigNumber) => bigNumber.times(BIG_NUMBER_WEI_MULTIPLIER).round(),
+  GWEI: (bigNumber) => bigNumber.times(BIG_NUMBER_GWEI_MULTIPLIER).round(9),
+  STC: (bigNumber) => bigNumber.times(BIG_NUMBER_ETH_MULTIPLIER).round(9),
+}
 
 let ethersProvider
 let starcoinProvider
@@ -196,7 +214,7 @@ const initialize = async (nodeURL) => {
 
   getAccountsButton.onclick = async () => {
     try {
-      /* 
+      /*
       const _accounts = await ethereum.request({
         method: 'eth_accounts',
       })
@@ -357,9 +375,12 @@ const initialize = async (nodeURL) => {
       console.log('get balance button clicked')
       const accountAddress = document.getElementById('accountAddressInput').value
       console.log({accountAddress})
-      const balance = await starcoinProvider.getBalance(accountAddress);
+      const balance = await starcoinProvider.getBalance(accountAddress)
       console.log({balance})
-      accountBalanceResult.innerText = (balance/1000000000).toFixed(9)
+      let convertedValue = toNormalizedDenomination['STC'](new BigNumber(balance, 10))
+      convertedValue = toSpecifiedDenomination['STC'](convertedValue)
+      convertedValue = convertedValue.round(4, BigNumber.ROUND_HALF_DOWN)
+      accountBalanceResult.innerText = convertedValue
       /*
       if (balanceBefore !== undefined) {
         // @ts-ignore
@@ -387,7 +408,7 @@ const initialize = async (nodeURL) => {
       const sendAmount = document.getElementById('amountInput').value
       const sendAmountString = sendAmount.toString() + 'u128'
       console.log({sendAmountString})
-      const unlockPassword = document.getElementById('passwordInput').value 
+      const unlockPassword = document.getElementById('passwordInput').value
       const signer = await starcoinProvider.getSigner(fromAccount);
       await signer.unlock(unlockPassword);
       const txnRequest = {
