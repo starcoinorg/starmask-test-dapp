@@ -35,3 +35,9 @@ yarn start
 ```
 
 3. Open browser(Chrome/Safari/Firefox, etc), and go to http://localhost:9022
+
+## Contract deployment and execution
+
+Check the file `MyCounter.move` in this repo, try to deploy and execute it in the Starcoin command line, please refer to [Deploy move contract](https://developer.starcoin.org/en/tutorials/deploy_move_contract/).
+
+After you get the address of the contract, you could execute it in this test-dapp.
