@@ -39,7 +39,7 @@
                   Node URL
                 </h3>
                 <div class="form-outline mb-3">
-                  <input id="nodeURLInput" type="text" id="form1" class="form-control form-control-lg" />
+                  <input id="nodeURLInput" type="text" class="form-control form-control-lg" />
                 </div>
                 <button
                   class="btn btn-primary btn-lg btn-block mb-3"
@@ -137,7 +137,7 @@
                   Address
                 </h5>
                 <div class="form-outline mb-3">
-                  <input id="accountAddressInput" type="text" id="form1" class="form-control form-control-lg" />
+                  <input id="accountAddressInput" type="text" class="form-control form-control-lg" required/>
                 </div>
 
                 <button
@@ -170,21 +170,21 @@
                   From
                 </h5>
                 <div class="form-outline mb-3">
-                  <input id="fromAccountInput" type="text" id="form1" class="form-control form-control-lg" />
+                  <input id="fromAccountInput" type="text" class="form-control form-control-lg" />
                 </div>
 
                 <h5 class="card-title">
                   To
                 </h5>
                 <div class="form-outline mb-3">
-                  <input id="toAccountInput" type="text" id="form1" class="form-control form-control-lg" />
+                  <input id="toAccountInput" type="text" class="form-control form-control-lg" />
                 </div>
 
                 <h5 class="card-title">
                   Amount of NanoSTC
                 </h5>
                 <div class="form-outline mb-3">
-                  <input id="amountInput" type="text" id="form1" class="form-control form-control-lg" />
+                  <input id="amountInput" type="text" class="form-control form-control-lg" />
                 </div> 
                 <div><small>Note: 1 STC = 1000,000,000 NanoSTC </small></div>
 
@@ -194,7 +194,7 @@
                   Password to unlock <b>Sender</b>
                 </h5>
                 <div class="form-outline mb-3">
-                  <input id="passwordInput" type="text" id="form1" class="form-control form-control-lg" />
+                  <input id="sendSTCPasswordInput" type="password" class="form-control form-control-lg" required/>
                 </div>
 
                 <button
@@ -204,6 +204,9 @@
                 >
                   Send
                 </button>
+                <p class="info-text alert alert-secondary">
+                  Sending Status: <span id="sendSTCStatus">Not clicked</span>
+                </p>
               </div>
             </div>
           </div>
@@ -296,17 +299,70 @@
                 -->
 
                 <h4 class="card-title">
-                  Contract
+                  Contract Actions
                 </h4>
 
+                <!--
                 <button
                   class="btn btn-primary btn-lg btn-block mb-3"
                   id="deployButton"
                   disabled
                 >
-                  Deploy Contract
+                  Execute Contract
+                </button>
+                -->
+
+                <h5 class="card-title">
+                  Signer Address
+                </h5>
+                <div class="form-outline mb-3">
+                  <input id="contractSignerInput" type="text" class="form-control form-control-lg" required/>
+                </div>
+
+                <h5 class="card-title">
+                  Contract Code 
+                </h5>
+                <div class="form-outline mb-3">
+                  <input id="contractCodeInput" type="text" class="form-control form-control-lg" required/>
+                </div>
+                <div><small>Note: contract code contains 3 parts: address, module and function, for example, "0x1::TransferScripts::peer_to_peer"</small></div>
+                <br />
+
+                <h5 class="card-title">
+                  Type Arguments of Contract
+                </h5>
+                <div class="form-outline mb-3">
+                  <input id="typeArgumentsInput" type="text" class="form-control form-control-lg" required/>
+                </div> 
+                <div><small>Note: type argument look like "0x1::STC::STC", use English comma to input multiple arguments </small></div>
+                <br />
+
+                <h5 class="card-title">
+                  Function Arguments of Contract
+                </h5>
+                <div class="form-outline mb-3">
+                  <input id="functionArgumentsInput" type="text" class="form-control form-control-lg" required/>
+                </div> 
+                <div><small>Note: use English comma to input multiple arguments</small></div>
+
+                <br />
+
+                <h5 class="card-title">
+                  Password to unlock <b>Signer</b>
+                </h5>
+                <div class="form-outline mb-3">
+                  <input id="contractSignerPasswordInput" type="password" class="form-control form-control-lg" required/>
+                </div>
+
+                <button
+                  class="btn btn-primary btn-lg btn-block mb-3"
+                  id="executeContractButton"
+                  disabled
+                >
+                  Execute Contract
                 </button>
 
+                <!--
                 <button
                   class="btn btn-primary btn-lg btn-block mb-3"
                   id="depositButton"
@@ -322,6 +378,7 @@
                 >
                   Withdraw
                 </button>
+                -->
 
                 <p class="info-text alert alert-secondary">
                   Contract Status: <span id="contractStatus">Not clicked</span>

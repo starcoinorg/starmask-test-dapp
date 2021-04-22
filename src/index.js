@@ -63,14 +63,18 @@ const permissionsResult = document.getElementById('permissionsResult')
 const getBalanceButton = document.getElementById('getBalanceButton')
 
 // Contract Section
+const executeContractButton = document.getElementById('executeContractButton')
+/*
 const deployButton = document.getElementById('deployButton')
 const depositButton = document.getElementById('depositButton')
 const withdrawButton = document.getElementById('withdrawButton')
+*/
 const contractStatus = document.getElementById('contractStatus')
 
 // Send Eth Section
 // const sendButton = document.getElementById('sendButton')
 const sendSTCButton = document.getElementById('sendSTCButton')
+const sendSTCStatus = document.getElementById('sendSTCStatus')
 
 // Send Tokens Section
 const tokenAddress = document.getElementById('tokenAddress')
@@ -148,9 +152,10 @@ const initialize = async (nodeURL) => {
   let accountButtonsInitialized = false
 
   const accountButtons = [
-    deployButton,
-    depositButton,
-    withdrawButton,
+    // deployButton,
+    executeContractButton,
+    // depositButton,
+    // withdrawButton,
     // sendButton,
     getBalanceButton,
     sendSTCButton,
@@ -244,7 +249,8 @@ const initialize = async (nodeURL) => {
       }
       clearTextDisplays()
     } else {
-      deployButton.disabled = false
+      // deployButton.disabled = false
+      executeContractButton.disabled = false
       // sendButton.disabled = false
       getBalanceButton.disabled = false
       sendSTCButton.disabled = false
@@ -309,7 +315,86 @@ const initialize = async (nodeURL) => {
     /**
      * Contract Interactions
      */
+    executeContractButton.onclick = async () => {
+      console.log('execute contract button clicked')
+      let contract
+      contractStatus.innerHTML = 'Executing'
+      const contractSignerAddress = document.getElementById('contractSignerInput').value
+      const contractCode = document.getElementById('contractCodeInput').value
+      const typeArgumentsInput = document.getElementById('typeArgumentsInput').value
+      const typeArguments = typeArgumentsInput === '' ? [] : typeArgumentsInput.split(',')
+      const functionArgumentsInput = document.getElementById('functionArgumentsInput').value
+      const functionArguments = functionArgumentsInput === '' ? [] : functionArgumentsInput.split(',')
+      const contractSignerPassword = document.getElementById('contractSignerPasswordInput').value
+      const signer = await starcoinProvider.getSigner(contractSignerAddress)
+      await signer.unlock(contractSignerPassword)
+      const txnRequest = {
+        script: {
+          code: contractCode,
+          type_args: typeArguments,
+          args: functionArguments,
+        }
+      }
+      console.log({txnRequest})
 
+      let txnInfo
+
+      try {
+        const txnDryRunOutput = await starcoinProvider.dryRun(txnRequest)
+        console.log({txnDryRunOutput})
+
+        const txn = await signer.sendTransaction(txnRequest)
+        console.log({txn})
+
+        txnInfo = await txn.wait(1)
+        console.log({txnInfo})
+        /*
+        contract = await piggybankFactory.deploy()
+        await contract.deployTransaction.wait()
+        */
+      } catch (error) {
+        contractStatus.innerHTML = 'Contract Execution Failed'
+        throw error
+      }
+
+      
+      /*
+      if (contractSignerAddress === undefined) {
+        return
+      }
+      */
+
+      // console.log(`Contract executed! address: ${contract.address} transactionHash: ${contract.transactionHash}`)
+      console.log(`Contract executed! TransactionInfo: ${txnInfo}`)
+      contractStatus.innerHTML = `Contract executed! Transaction Hash: ${txnInfo.transaction_hash}` 
+      // depositButton.disabled = false
+      // withdrawButton.disabled = false
+
+      /*
+      depositButton.onclick = async () => {
+        contractStatus.innerHTML = 'Deposit initiated'
+        const result = await contract.deposit({
+          from: accounts[0],
+          value: '0x3782dace9d900000',
+        })
+        console.log(result)
+        contractStatus.innerHTML = 'Deposit completed'
+      }
+
+      withdrawButton.onclick = async () => {
+        const result = await contract.withdraw(
+          '0xde0b6b3a7640000',
+          { from: accounts[0] },
+        )
+        console.log(result)
+        contractStatus.innerHTML = 'Withdrawn'
+      }
+      */
+
+      console.log('Contract execution ended')
+    }
+
+    /*
     deployButton.onclick = async () => {
       let contract
       contractStatus.innerHTML = 'Deploying'
@@ -352,6 +437,7 @@ const initialize = async (nodeURL) => {
 
       console.log(contract)
     }
+    */
 
     /**
      * Sending ETH
@@ -405,9 +491,11 @@ const initialize = async (nodeURL) => {
       const sendAmount = document.getElementById('amountInput').value
       const sendAmountString = sendAmount.toString() + 'u128'
       console.log({sendAmountString})
-      const unlockPassword = document.getElementById('passwordInput').value
+      const unlockPassword = document.getElementById('sendSTCPasswordInput').value
+      console.log({unlockPassword})
       const signer = await starcoinProvider.getSigner(fromAccount)
       await signer.unlock(unlockPassword)
+      console.log({signer})
       const txnRequest = {
         script: {
           code: '0x1::TransferScripts::peer_to_peer',
@@ -418,6 +506,7 @@ const initialize = async (nodeURL) => {
       console.log({txnRequest})
       const txnOutput = await starcoinProvider.dryRun(txnRequest)
       console.log({txnOutput})
+      sendSTCStatus.innerText = "Sending STC..."
 
       const balanceBefore = await starcoinProvider.getBalance(toAccount)
       console.log({balanceBefore})
@@ -427,6 +516,8 @@ const initialize = async (nodeURL) => {
 
       const txnInfo = await txn.wait(1)
       console.log({txnInfo})
+
+      sendSTCStatus.innerText = "Trasaction Completed"
 
       const balance = await starcoinProvider.getBalance(toAccount)
       console.log({balance})
