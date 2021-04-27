@@ -1,36 +1,28 @@
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Starcoin E2E Test Dapp</title>
-    <link rel="icon" type="image/png" href="starcoin-logo.png" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.14.1/css/mdb.min.css"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="index.css" type="text/css" />
-  </head>
 
-  <body>
-    <main class="container-fluid">
-      <header>
-        <div id="logo-container">
-          <h1 id="logo-text" class="text-center">
-            Starcoin E2E Test Dapp
-          </h1>
+<head>
+  <meta charset="UTF-8" />
+  <title>Starcoin E2E Test Dapp</title>
+  <link rel="icon" type="image/png" href="starcoin-logo.png" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.14.1/css/mdb.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="index.css" type="text/css" />
+</head>
 
-          <img class="mx-auto" id="mm-logo" src="starcoin-logo.png" />
-        </div>
-      </header>
+<body>
+  <main class="container-fluid">
+    <header>
+      <div id="logo-container">
+        <h1 id="logo-text" class="text-center">
+          Starcoin E2E Test Dapp
+        </h1>
+
+        <img class="mx-auto" id="mm-logo" src="starcoin-logo.png" />
+      </div>
+    </header>
+    <section>
       <section>
-        <section>
         <div class="row d-flex justify-content-center">
           <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
             <div class="card">
@@ -41,10 +33,7 @@
                 <div class="form-outline mb-3">
                   <input id="nodeURLInput" type="text" class="form-control form-control-lg" />
                 </div>
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="connectNodeButton"
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="connectNodeButton">
                   Connect Node
                 </button>
                 <div><small>Note: Starcoin node APIs should be opened. HTTPS is needed for online version.</small></div>
@@ -107,11 +96,7 @@
                 </button>
                 -->
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="getAccounts"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="getAccounts" disabled>
                   Get Starcoin Accounts
                 </button>
 
@@ -124,9 +109,7 @@
             </div>
           </div>
 
-          <div
-            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
-          >
+          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
             <div class="card full-width">
               <div class="card-body">
                 <h4 class="card-title">
@@ -137,18 +120,16 @@
                   Address
                 </h5>
                 <div class="form-outline mb-3">
-                  <input id="accountAddressInput" type="text" class="form-control form-control-lg" required/>
+                  <input id="accountAddressInput" type="text" class="form-control form-control-lg" required />
                 </div>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="getBalanceButton"
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="getBalanceButton">
                   Get Balance
                 </button>
                 <hr />
                 <div class="text-center">
-                  <p><h5>Account Balance: </h5>
+                  <p>
+                  <h5>Account Balance: </h5>
                   </p>
                   <h1><span id="accountBalanceResult" class="badge bg-success">0</span></h1>
                   <h6>STC</h6>
@@ -157,9 +138,7 @@
             </div>
           </div>
 
-          <div
-            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
-          >
+          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
             <div class="card full-width">
               <div class="card-body">
                 <h4 class="card-title">
@@ -185,23 +164,19 @@
                 </h5>
                 <div class="form-outline mb-3">
                   <input id="amountInput" type="text" class="form-control form-control-lg" />
-                </div> 
-                <div><small>Note: 1 STC = 1000,000,000 NanoSTC </small></div>
+                </div>
+                <div><small>Note: 1 STC = 1000000000 NanoSTC </small></div>
 
                 <br />
 
                 <h5 class="card-title">
-                  Password to unlock <b>Sender</b>
+                  PrivateKey of <b>Sender</b>
                 </h5>
                 <div class="form-outline mb-3">
-                  <input id="sendSTCPasswordInput" type="password" class="form-control form-control-lg" required/>
+                  <input id="senderPrivateKeyHexInput" class="form-control form-control-lg" required />
                 </div>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="sendSTCButton"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="sendSTCButton" disabled>
                   Send
                 </button>
                 <p class="info-text alert alert-secondary">
@@ -250,9 +225,7 @@
 
       <section>
         <div class="row">
-          <div
-            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
-          >
+          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
             <div class="card full-width">
               <div class="card-body">
                 <h4 class="card-title">
@@ -263,33 +236,35 @@
                   Signer Address
                 </h5>
                 <div class="form-outline mb-3">
-                  <input id="contractSignerInput" type="text" class="form-control form-control-lg" required/>
+                  <input id="contractSignerInput" type="text" class="form-control form-control-lg" required />
                 </div>
 
                 <h5 class="card-title">
-                  Contract Code 
+                  Contract Code
                 </h5>
                 <div class="form-outline mb-3">
-                  <input id="contractCodeInput" type="text" class="form-control form-control-lg" required/>
+                  <input id="contractCodeInput" type="text" class="form-control form-control-lg" required />
                 </div>
-                <div><small>Note: contract code contains 3 parts: address, module and function, for example, "0x1::TransferScripts::peer_to_peer"</small></div>
+                <div><small>Note: contract code contains 3 parts: address, module and function, for example,
+                    "0x1::TransferScripts::peer_to_peer"</small></div>
                 <br />
 
                 <h5 class="card-title">
                   Type Arguments of Contract
                 </h5>
                 <div class="form-outline mb-3">
-                  <input id="typeArgumentsInput" type="text" class="form-control form-control-lg" required/>
-                </div> 
-                <div><small>Note: type argument look like "0x1::STC::STC", use English comma to input multiple arguments </small></div>
+                  <input id="typeArgumentsInput" type="text" class="form-control form-control-lg" required />
+                </div>
+                <div><small>Note: type argument look like "0x1::STC::STC", use English comma to input multiple arguments
+                  </small></div>
                 <br />
 
                 <h5 class="card-title">
                   Function Arguments of Contract
                 </h5>
                 <div class="form-outline mb-3">
-                  <input id="functionArgumentsInput" type="text" class="form-control form-control-lg" required/>
-                </div> 
+                  <input id="functionArgumentsInput" type="text" class="form-control form-control-lg" required />
+                </div>
                 <div><small>Note: use English comma to input multiple arguments</small></div>
 
                 <br />
@@ -298,14 +273,11 @@
                   Password to unlock <b>Signer</b>
                 </h5>
                 <div class="form-outline mb-3">
-                  <input id="contractSignerPasswordInput" type="password" class="form-control form-control-lg" required/>
+                  <input id="contractSignerPasswordInput" type="password" class="form-control form-control-lg"
+                    required />
                 </div>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="executeContractButton"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="executeContractButton" disabled>
                   Execute Contract
                 </button>
 
@@ -334,9 +306,7 @@
             </div>
           </div>
 
-          <div
-            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
-          >
+          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
             <div class="card full-width">
               <div class="card-body">
                 <h4 class="card-title">
@@ -347,14 +317,14 @@
                   Signer Address
                 </h5>
                 <div class="form-outline mb-3">
-                  <input id="messageSignerInput" type="text" class="form-control form-control-lg" required/>
+                  <input id="messageSignerInput" type="text" class="form-control form-control-lg" required />
                 </div>
 
                 <h5 class="card-title">
                   Messsage
                 </h5>
                 <div class="form-outline mb-3">
-                  <input id="signMessageInput" type="text" class="form-control form-control-lg" required/>
+                  <input id="signMessageInput" type="text" class="form-control form-control-lg" required />
                 </div>
                 <div><small>Note: message for signing should be a string without any whitespace</small></div>
                 <br />
@@ -363,14 +333,11 @@
                   Password to unlock <b>Signer</b>
                 </h5>
                 <div class="form-outline mb-3">
-                  <input id="messageSignerPasswordInput" type="password" class="form-control form-control-lg" required/>
+                  <input id="messageSignerPasswordInput" type="password" class="form-control form-control-lg"
+                    required />
                 </div>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="signMessageButton"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="signMessageButton" disabled>
                   Sign Message
                 </button>
 
@@ -399,9 +366,7 @@
             </div>
           </div>
 
-          <div
-            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
-          >
+          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
             <div class="card full-width">
               <div class="card-body">
                 <h4 class="card-title">
@@ -412,43 +377,23 @@
                   Token: <span id="tokenAddress"></span>
                 </p>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="createToken"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="createToken" disabled>
                   Create Token
                 </button>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="transferTokens"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="transferTokens" disabled>
                   Transfer Tokens
                 </button>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="approveTokens"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="approveTokens" disabled>
                   Approve Tokens
                 </button>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="transferTokensWithoutGas"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="transferTokensWithoutGas" disabled>
                   Transfer Tokens Without Gas
                 </button>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="approveTokensWithoutGas"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="approveTokensWithoutGas" disabled>
                   Approve Tokens Without Gas
                 </button>
               </div>
@@ -459,20 +404,14 @@
 
       <section>
         <div class="row">
-          <div
-            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
-          >
+          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
             <div class="card full-width">
               <div class="card-body">
                 <h4>
                   Eth Sign
                 </h4>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="ethSign"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="ethSign" disabled>
                   Sign
                 </button>
 
@@ -482,20 +421,14 @@
               </div>
             </div>
           </div>
-          <div
-            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
-          >
+          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
             <div class="card full-width">
               <div class="card-body">
                 <h4>
                   Personal Sign
                 </h4>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="personalSign"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="personalSign" disabled>
                   Sign
                 </button>
 
@@ -503,11 +436,7 @@
                   Result: <span id="personalSignResult"></span>
                 </p>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="personalSignVerify"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="personalSignVerify" disabled>
                   Verify
                 </button>
 
@@ -522,49 +451,30 @@
               </div>
             </div>
           </div>
-          <div
-            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
-          >
+          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
             <div class="card full-width">
               <div class="card-body">
                 <h4 class="card-title">
                   Encrypt / Decrypt
                 </h4>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="getEncryptionKeyButton"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="getEncryptionKeyButton" disabled>
                   Get Encryption Key
                 </button>
 
                 <hr />
 
                 <div id="encrypt-message-form">
-                  <input
-                    class="form-control"
-                    type="text"
-                    placeholder="Message to encrypt"
-                    id="encryptMessageInput"
-                  />
+                  <input class="form-control" type="text" placeholder="Message to encrypt" id="encryptMessageInput" />
 
-                  <button
-                    class="btn btn-primary btn-lg btn-block mb-3"
-                    id="encryptButton"
-                    disabled
-                  >
+                  <button class="btn btn-primary btn-lg btn-block mb-3" id="encryptButton" disabled>
                     Encrypt
                   </button>
                 </div>
 
                 <hr />
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="decryptButton"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="decryptButton" disabled>
                   Decrypt
                 </button>
 
@@ -582,20 +492,14 @@
               </div>
             </div>
           </div>
-          <div
-            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
-          >
+          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
             <div class="card full-width">
               <div class="card-body">
                 <h4>
                   Sign Typed Data
                 </h4>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="signTypedData"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="signTypedData" disabled>
                   Sign
                 </button>
 
@@ -603,11 +507,7 @@
                   Result: <span id="signTypedDataResult"></span>
                 </p>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="signTypedDataVerify"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="signTypedDataVerify" disabled>
                   Verify
                 </button>
 
@@ -618,20 +518,14 @@
               </div>
             </div>
           </div>
-          <div
-            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
-          >
+          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
             <div class="card full-width">
               <div class="card-body">
                 <h4>
                   Sign Typed Data V3
                 </h4>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="signTypedDataV3"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="signTypedDataV3" disabled>
                   Sign
                 </button>
 
@@ -640,11 +534,7 @@
                   <span id="signTypedDataV3Result"></span>
                 </p>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="signTypedDataV3Verify"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="signTypedDataV3Verify" disabled>
                   Verify
                 </button>
 
@@ -655,20 +545,14 @@
               </div>
             </div>
           </div>
-          <div
-            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
-          >
+          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
             <div class="card full-width">
               <div class="card-body">
                 <h4>
                   Sign Typed Data V4
                 </h4>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="signTypedDataV4"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="signTypedDataV4" disabled>
                   Sign
                 </button>
 
@@ -677,11 +561,7 @@
                   <span id="signTypedDataV4Result"></span>
                 </p>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="signTypedDataV4Verify"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="signTypedDataV4Verify" disabled>
                   Verify
                 </button>
 
@@ -703,11 +583,7 @@
                   Add Ethereum Chain
                 </h4>
 
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="addEthereumChain"
-                  disabled
-                >
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="addEthereumChain" disabled>
                   xDAI
                 </button>
               </div>
@@ -715,8 +591,9 @@
           </div>
         </div>
       </section>
-    </main>
+  </main>
 
-    <script src="bundle.js" defer></script>
-  </body>
+  <script src="bundle.js" defer></script>
+</body>
+
 </html>
