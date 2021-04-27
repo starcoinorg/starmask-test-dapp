@@ -255,62 +255,9 @@
           >
             <div class="card full-width">
               <div class="card-body">
-                <!--
-                <h4 class="card-title">
-                  Send STC
-                </h4>
-
-                <h5 class="card-title">
-                  From
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="fromAccountInput" type="text" id="form1" class="form-control form-control-lg" />
-                </div>
-
-                <h5 class="card-title">
-                  To
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="toAccountInput" type="text" id="form1" class="form-control form-control-lg" />
-                </div>
-
-                <h5 class="card-title">
-                  Amount
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="amountInput" type="text" id="form1" class="form-control form-control-lg" />
-                </div>
-
-                <h5 class="card-title">
-                  Password to unlock
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="passwordInput" type="text" id="form1" class="form-control form-control-lg" />
-                </div>
-
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="sendSTCButton"
-                  disabled
-                >
-                  Send
-                </button>
-                <hr />
-                -->
-
                 <h4 class="card-title">
                   Contract Actions
                 </h4>
-
-                <!--
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="deployButton"
-                  disabled
-                >
-                  Execute Contract
-                </button>
-                -->
 
                 <h5 class="card-title">
                   Signer Address
@@ -393,6 +340,71 @@
             <div class="card full-width">
               <div class="card-body">
                 <h4 class="card-title">
+                  Sign Message
+                </h4>
+
+                <h5 class="card-title">
+                  Signer Address
+                </h5>
+                <div class="form-outline mb-3">
+                  <input id="messageSignerInput" type="text" class="form-control form-control-lg" required/>
+                </div>
+
+                <h5 class="card-title">
+                  Messsage
+                </h5>
+                <div class="form-outline mb-3">
+                  <input id="signMessageInput" type="text" class="form-control form-control-lg" required/>
+                </div>
+                <div><small>Note: message for signing should be a string without any whitespace</small></div>
+                <br />
+
+                <h5 class="card-title">
+                  Password to unlock <b>Signer</b>
+                </h5>
+                <div class="form-outline mb-3">
+                  <input id="messageSignerPasswordInput" type="password" class="form-control form-control-lg" required/>
+                </div>
+
+                <button
+                  class="btn btn-primary btn-lg btn-block mb-3"
+                  id="signMessageButton"
+                  disabled
+                >
+                  Sign Message
+                </button>
+
+                <!--
+                <button
+                  class="btn btn-primary btn-lg btn-block mb-3"
+                  id="depositButton"
+                  disabled
+                >
+                  Deposit
+                </button>
+
+                <button
+                  class="btn btn-primary btn-lg btn-block mb-3"
+                  id="withdrawButton"
+                  disabled
+                >
+                  Withdraw
+                </button>
+                -->
+
+                <p class="info-text alert alert-secondary">
+                  Message Status: <span id="signMessageStatus">Not clicked</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
+          >
+            <div class="card full-width">
+              <div class="card-body">
+                <h4 class="card-title">
                   Send Tokens
                 </h4>
 
@@ -439,66 +451,6 @@
                 >
                   Approve Tokens Without Gas
                 </button>
-              </div>
-            </div>
-          </div>
-          <div
-            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
-          >
-            <div class="card full-width">
-              <div class="card-body">
-                <h4 class="card-title">
-                  Encrypt / Decrypt
-                </h4>
-
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="getEncryptionKeyButton"
-                  disabled
-                >
-                  Get Encryption Key
-                </button>
-
-                <hr />
-
-                <div id="encrypt-message-form">
-                  <input
-                    class="form-control"
-                    type="text"
-                    placeholder="Message to encrypt"
-                    id="encryptMessageInput"
-                  />
-
-                  <button
-                    class="btn btn-primary btn-lg btn-block mb-3"
-                    id="encryptButton"
-                    disabled
-                  >
-                    Encrypt
-                  </button>
-                </div>
-
-                <hr />
-
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="decryptButton"
-                  disabled
-                >
-                  Decrypt
-                </button>
-
-                <p class="info-text alert alert-secondary">
-                  Encryption key: <span id="encryptionKeyDisplay"></span>
-                </p>
-
-                <p class="info-text text-truncate alert alert-secondary">
-                  Ciphertext: <span id="ciphertextDisplay"></span>
-                </p>
-
-                <p class="info-text alert alert-secondary">
-                  Cleartext: <span id="cleartextDisplay"></span>
-                </p>
               </div>
             </div>
           </div>
@@ -566,6 +518,66 @@
                 <p class="info-text alert alert-warning">
                   personal_ecRecover result:
                   <span id="personalSignVerifyECRecoverResult"></span>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div
+            class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch"
+          >
+            <div class="card full-width">
+              <div class="card-body">
+                <h4 class="card-title">
+                  Encrypt / Decrypt
+                </h4>
+
+                <button
+                  class="btn btn-primary btn-lg btn-block mb-3"
+                  id="getEncryptionKeyButton"
+                  disabled
+                >
+                  Get Encryption Key
+                </button>
+
+                <hr />
+
+                <div id="encrypt-message-form">
+                  <input
+                    class="form-control"
+                    type="text"
+                    placeholder="Message to encrypt"
+                    id="encryptMessageInput"
+                  />
+
+                  <button
+                    class="btn btn-primary btn-lg btn-block mb-3"
+                    id="encryptButton"
+                    disabled
+                  >
+                    Encrypt
+                  </button>
+                </div>
+
+                <hr />
+
+                <button
+                  class="btn btn-primary btn-lg btn-block mb-3"
+                  id="decryptButton"
+                  disabled
+                >
+                  Decrypt
+                </button>
+
+                <p class="info-text alert alert-secondary">
+                  Encryption key: <span id="encryptionKeyDisplay"></span>
+                </p>
+
+                <p class="info-text text-truncate alert alert-secondary">
+                  Ciphertext: <span id="ciphertextDisplay"></span>
+                </p>
+
+                <p class="info-text alert alert-secondary">
+                  Cleartext: <span id="cleartextDisplay"></span>
                 </p>
               </div>
             </div>

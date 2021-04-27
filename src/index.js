@@ -76,6 +76,10 @@ const contractStatus = document.getElementById('contractStatus')
 const sendSTCButton = document.getElementById('sendSTCButton')
 const sendSTCStatus = document.getElementById('sendSTCStatus')
 
+// Sign Message Section
+const signMessageButton = document.getElementById('signMessageButton')
+const signMessageStatus = document.getElementById('signMessageStatus')
+
 // Send Tokens Section
 const tokenAddress = document.getElementById('tokenAddress')
 const createToken = document.getElementById('createToken')
@@ -154,6 +158,7 @@ const initialize = async (nodeURL) => {
   const accountButtons = [
     // deployButton,
     executeContractButton,
+    signMessageButton,
     // depositButton,
     // withdrawButton,
     // sendButton,
@@ -251,6 +256,7 @@ const initialize = async (nodeURL) => {
     } else {
       // deployButton.disabled = false
       executeContractButton.disabled = false
+      signMessageButton.disabled = false
       // sendButton.disabled = false
       getBalanceButton.disabled = false
       sendSTCButton.disabled = false
@@ -438,6 +444,64 @@ const initialize = async (nodeURL) => {
       console.log(contract)
     }
     */
+
+    /**
+     * Sign Message
+    */
+
+    signMessageButton.onclick = async () => {
+      console.log('sign message button clicked')
+      let signedMessage
+      signMessageStatus.innerHTML = 'Signing Message....'
+      const messageSignerAddress = document.getElementById('messageSignerInput').value
+      const messageInput = document.getElementById('signMessageInput').value
+      const messageSignerPassword = document.getElementById('messageSignerPasswordInput').value
+
+      try {
+        const signer = await starcoinProvider.getSigner(messageSignerAddress)
+        await signer.unlock(messageSignerPassword)
+        signedMessage = await signer.signMessage(messageInput);
+        console.log({signedMessage})
+        signMessageStatus.innerHTML = `Signed Successfully. Signed Message Output: ${signedMessage}`
+      } catch (error) {
+        signMessageStatus.innerHTML = 'Message Signing Failed'
+        throw error
+      }
+
+      
+      /*
+      if (contractSignerAddress === undefined) {
+        return
+      }
+      */
+
+      // console.log(`Contract executed! address: ${contract.address} transactionHash: ${contract.transactionHash}`)
+      // depositButton.disabled = false
+      // withdrawButton.disabled = false
+
+      /*
+      depositButton.onclick = async () => {
+        contractStatus.innerHTML = 'Deposit initiated'
+        const result = await contract.deposit({
+          from: accounts[0],
+          value: '0x3782dace9d900000',
+        })
+        console.log(result)
+        contractStatus.innerHTML = 'Deposit completed'
+      }
+
+      withdrawButton.onclick = async () => {
+        const result = await contract.withdraw(
+          '0xde0b6b3a7640000',
+          { from: accounts[0] },
+        )
+        console.log(result)
+        contractStatus.innerHTML = 'Withdrawn'
+      }
+      */
+
+      console.log('sign message ended')
+    }
 
     /**
      * Sending ETH
