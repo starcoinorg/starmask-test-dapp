@@ -183,7 +183,8 @@ const initialize = async (nodeURL) => {
     signTypedDataV4Verify,
   ]
 
-  const isMetaMaskConnected = () => accounts && accounts.length > 0
+  // const isMetaMaskConnected = () => accounts && accounts.length > 0
+  const isMetaMaskConnected = () => { return false }
 
   const onClickInstall = () => {
     /*
@@ -212,7 +213,7 @@ const initialize = async (nodeURL) => {
       const newAccounts = await ethereum.request({
         method: 'eth_requestAccounts',
       })
-      handleNewAccounts(newAccounts)
+      // handleNewAccounts(newAccounts)
     } catch (error) {
       console.error(error)
     }
@@ -556,6 +557,7 @@ const initialize = async (nodeURL) => {
       console.log({ sendAmountString })
       const senderPrivateKeyHex = document.getElementById('senderPrivateKeyHexInput').value
       console.log({ senderPrivateKeyHex })
+
       const txnRequest = {
         script: {
           code: '0x1::TransferScripts::peer_to_peer',
@@ -577,16 +579,17 @@ const initialize = async (nodeURL) => {
       const maxGasAmount = 124191
 
       // because the time system in dev network is relatively static, 
-      // we should use nodeInfo.now_secondsinstead of using new Date().getTime()
+      // we should use nodeInfo.now_seconds instead of using new Date().getTime()
       const nowSeconds = await starcoinProvider.getNowSeconds()
       // expired after 12 hours since Unix Epoch
       const expirationTimestampSecs = nowSeconds + 43200
 
       const chainId = parseInt(chainIdDiv.innerHTML, 10)
-      const hex = await utils.tx.generateSignedUserTransactionHex(senderPrivateKeyHex, fromAccount, toAccount, sendAmount, maxGasAmount, senderSequenceNumber, expirationTimestampSecs, chainId);
-      console.log(hex)
+      const txn_hex = await utils.tx.generateSignedUserTransactionHex(senderPrivateKeyHex, fromAccount, toAccount, sendAmount, maxGasAmount, senderSequenceNumber, expirationTimestampSecs, chainId);
+      console.log({txn_hex})
 
-      const txn = await starcoinProvider.sendTransaction(hex);
+
+      const txn = await starcoinProvider.sendTransaction(txn_hex);
       console.log({ 'sendTransactionOutput': txn })
 
 
@@ -1168,11 +1171,14 @@ const initialize = async (nodeURL) => {
       starcoinProvider = new providers.JsonrpcProvider(nodeURL);
       getNetworkAndChainId()
       getLatestBlockNumber()
-      getAccountsList()
+      // getAccountsList()
       connectNodeButton.innerText = 'Node Connected'
       connectNodeButton.disabled = true
-      getAccountsButton.disabled = false
+      // getAccountsButton.disabled = false
+      getBalanceButton.disabled = false
       // alert('Node Connected')
+      initializeAccountButtons()
+      // updateButtons()
     } catch (err) {
       console.error(err)
     }
@@ -1183,9 +1189,9 @@ const initialize = async (nodeURL) => {
     // accountsDiv.innerHTML = accounts
     // if (isMetaMaskConnected()) {
     if (true) {
-      initializeAccountButtons()
+      // initializeAccountButtons()
     }
-    updateButtons()
+    // updateButtons()
   }
 
   function handleNewChain(chainId) {
@@ -1242,7 +1248,7 @@ const initialize = async (nodeURL) => {
     }
   }
 
-  updateButtons()
+  // updateButtons()
 
   // if (isMetaMaskInstalled()) {
   if (isNodeConnected) {
@@ -1262,8 +1268,8 @@ const initialize = async (nodeURL) => {
       })
       */
       console.log('new accounts get')
-      const newAccounts = await starcoinProvider.listAccounts()
-      handleNewAccounts(newAccounts)
+      // const newAccounts = await starcoinProvider.listAccounts()
+      // handleNewAccounts(newAccounts)
     } catch (err) {
       console.error('Error on init when getting accounts', err)
     }
