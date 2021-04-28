@@ -2,7 +2,7 @@ import MetaMaskOnboarding from '@metamask/onboarding'
 // eslint-disable-next-line camelcase
 import { encrypt, recoverPersonalSignature, recoverTypedSignatureLegacy, recoverTypedSignature, recoverTypedSignature_v4 } from 'eth-sig-util'
 import { ethers } from 'ethers'
-import { providers } from '@starcoin/starcoin'
+import { providers, utils } from '@starcoin/starcoin'
 import { toChecksumAddress } from 'ethereumjs-util'
 import BigNumber from 'bignumber.js'
 import { hstBytecode, hstAbi, piggybankBytecode, piggybankAbi } from './constants.json'
@@ -37,7 +37,6 @@ const forwarderOrigin = currentUrl.hostname === 'localhost'
 const isMetaMaskInstalled = () => { return true }
 
 // Node URL Section
-const nodeURLInput = document.getElementById('nodeURLInput')
 const connectNodeButton = document.getElementById('connectNodeButton')
 
 // Dapp Status Section
@@ -184,7 +183,8 @@ const initialize = async (nodeURL) => {
     signTypedDataV4Verify,
   ]
 
-  const isMetaMaskConnected = () => accounts && accounts.length > 0
+  // const isMetaMaskConnected = () => accounts && accounts.length > 0
+  const isMetaMaskConnected = () => { return false }
 
   const onClickInstall = () => {
     /*
@@ -198,7 +198,7 @@ const initialize = async (nodeURL) => {
     try {
       let inputNodeURL = document.getElementById('nodeURLInput').value
       nodeURL = inputNodeURL
-      console.log({nodeURL})
+      console.log({ nodeURL })
       handleNodeURL(nodeURL)
       isNodeConnected = true
     } catch (error) {
@@ -213,7 +213,7 @@ const initialize = async (nodeURL) => {
       const newAccounts = await ethereum.request({
         method: 'eth_requestAccounts',
       })
-      handleNewAccounts(newAccounts)
+      // handleNewAccounts(newAccounts)
     } catch (error) {
       console.error(error)
     }
@@ -229,7 +229,7 @@ const initialize = async (nodeURL) => {
       const _accounts = await starcoinProvider.listAccounts()
       accounts = _accounts
       let template = "<li class=\"list-group-item\">~item~</li>";
-      _accounts.forEach(function(account) {
+      _accounts.forEach(function (account) {
         getAccountsResults.insertAdjacentHTML("beforeend", template.replace(/~item~/g, account));
       })
     } catch (err) {
@@ -341,19 +341,19 @@ const initialize = async (nodeURL) => {
           args: functionArguments,
         }
       }
-      console.log({txnRequest})
+      console.log({ txnRequest })
 
       let txnInfo
 
       try {
         const txnDryRunOutput = await starcoinProvider.dryRun(txnRequest)
-        console.log({txnDryRunOutput})
+        console.log({ txnDryRunOutput })
 
         const txn = await signer.sendTransaction(txnRequest)
-        console.log({txn})
+        console.log({ txn })
 
         txnInfo = await txn.wait(1)
-        console.log({txnInfo})
+        console.log({ txnInfo })
         /*
         contract = await piggybankFactory.deploy()
         await contract.deployTransaction.wait()
@@ -363,7 +363,7 @@ const initialize = async (nodeURL) => {
         throw error
       }
 
-      
+
       /*
       if (contractSignerAddress === undefined) {
         return
@@ -372,7 +372,7 @@ const initialize = async (nodeURL) => {
 
       // console.log(`Contract executed! address: ${contract.address} transactionHash: ${contract.transactionHash}`)
       console.log(`Contract executed! TransactionInfo: ${txnInfo}`)
-      contractStatus.innerHTML = `Contract executed! Transaction Hash: ${txnInfo.transaction_hash}` 
+      contractStatus.innerHTML = `Contract executed! Transaction Hash: ${txnInfo.transaction_hash}`
       // depositButton.disabled = false
       // withdrawButton.disabled = false
 
@@ -461,14 +461,14 @@ const initialize = async (nodeURL) => {
         const signer = await starcoinProvider.getSigner(messageSignerAddress)
         await signer.unlock(messageSignerPassword)
         signedMessage = await signer.signMessage(messageInput);
-        console.log({signedMessage})
+        console.log({ signedMessage })
         signMessageStatus.innerHTML = `Signed Successfully. Signed Message Output: ${signedMessage}`
       } catch (error) {
         signMessageStatus.innerHTML = 'Message Signing Failed'
         throw error
       }
 
-      
+
       /*
       if (contractSignerAddress === undefined) {
         return
@@ -521,9 +521,9 @@ const initialize = async (nodeURL) => {
     getBalanceButton.onclick = async () => {
       console.log('get balance button clicked')
       const accountAddress = document.getElementById('accountAddressInput').value
-      console.log({accountAddress})
+      console.log({ accountAddress })
       const balance = await starcoinProvider.getBalance(accountAddress) || 0
-      console.log({balance})
+      console.log({ balance })
       let convertedValue = toNormalizedDenomination['NanoSTC'](new BigNumber(balance, 10))
       convertedValue = toSpecifiedDenomination['STC'](convertedValue)
       convertedValue = convertedValue.round(9, BigNumber.ROUND_HALF_DOWN)
@@ -552,14 +552,12 @@ const initialize = async (nodeURL) => {
       console.log('send stc button clicked')
       const fromAccount = document.getElementById('fromAccountInput').value
       const toAccount = document.getElementById('toAccountInput').value
-      const sendAmount = document.getElementById('amountInput').value
-      const sendAmountString = sendAmount.toString() + 'u128'
-      console.log({sendAmountString})
-      const unlockPassword = document.getElementById('sendSTCPasswordInput').value
-      console.log({unlockPassword})
-      const signer = await starcoinProvider.getSigner(fromAccount)
-      await signer.unlock(unlockPassword)
-      console.log({signer})
+      const sendAmount = parseInt(document.getElementById('amountInput').value, 10)
+      const sendAmountString = `${sendAmount.toString()}u128`
+      console.log({ sendAmountString })
+      const senderPrivateKeyHex = document.getElementById('senderPrivateKeyHexInput').value
+      console.log({ senderPrivateKeyHex })
+
       const txnRequest = {
         script: {
           code: '0x1::TransferScripts::peer_to_peer',
@@ -567,24 +565,41 @@ const initialize = async (nodeURL) => {
           args: [toAccount, 'x""', sendAmountString],
         }
       }
-      console.log({txnRequest})
+      console.log({ txnRequest })
       const txnOutput = await starcoinProvider.dryRun(txnRequest)
-      console.log({txnOutput})
+      console.log({ txnOutput })
       sendSTCStatus.innerText = "Sending STC..."
 
       const balanceBefore = await starcoinProvider.getBalance(toAccount)
-      console.log({balanceBefore})
+      console.log({ balanceBefore })
 
-      const txn = await signer.sendTransaction(txnRequest)
-      console.log({txn})
+      const senderSequenceNumber = await starcoinProvider.getSequenceNumber(fromAccount)
+
+      // TODO: generate maxGasAmount from contract.dry_run -> gas_used
+      const maxGasAmount = 124191
+
+      // because the time system in dev network is relatively static, 
+      // we should use nodeInfo.now_seconds instead of using new Date().getTime()
+      const nowSeconds = await starcoinProvider.getNowSeconds()
+      // expired after 12 hours since Unix Epoch
+      const expirationTimestampSecs = nowSeconds + 43200
+
+      const chainId = parseInt(chainIdDiv.innerHTML, 10)
+      const txn_hex = await utils.tx.generateSignedUserTransactionHex(senderPrivateKeyHex, fromAccount, toAccount, sendAmount, maxGasAmount, senderSequenceNumber, expirationTimestampSecs, chainId);
+      console.log({txn_hex})
+
+
+      const txn = await starcoinProvider.sendTransaction(txn_hex);
+      console.log({ 'sendTransactionOutput': txn })
+
 
       const txnInfo = await txn.wait(1)
-      console.log({txnInfo})
+      console.log({ txnInfo })
 
-      sendSTCStatus.innerText = "Trasaction Completed"
+      sendSTCStatus.innerText = 'Trasaction Completed'
 
       const balance = await starcoinProvider.getBalance(toAccount)
-      console.log({balance})
+      console.log({ balance })
 
       /*
       if (balanceBefore !== undefined) {
@@ -1150,45 +1165,48 @@ const initialize = async (nodeURL) => {
     }
   }
 
-  function handleNodeURL (nodeURL) {
+  function handleNodeURL(nodeURL) {
     try {
       initialize(nodeURL)
       starcoinProvider = new providers.JsonrpcProvider(nodeURL);
       getNetworkAndChainId()
       getLatestBlockNumber()
-      getAccountsList()
+      // getAccountsList()
       connectNodeButton.innerText = 'Node Connected'
       connectNodeButton.disabled = true
-      getAccountsButton.disabled = false
+      // getAccountsButton.disabled = false
+      getBalanceButton.disabled = false
       // alert('Node Connected')
+      initializeAccountButtons()
+      // updateButtons()
     } catch (err) {
       console.error(err)
     }
   }
 
-  function handleNewAccounts (newAccounts) {
+  function handleNewAccounts(newAccounts) {
     accounts = newAccounts
     // accountsDiv.innerHTML = accounts
     // if (isMetaMaskConnected()) {
     if (true) {
-      initializeAccountButtons()
+      // initializeAccountButtons()
     }
-    updateButtons()
+    // updateButtons()
   }
 
-  function handleNewChain (chainId) {
+  function handleNewChain(chainId) {
     chainIdDiv.innerHTML = chainId
   }
 
-  function handleNewNetwork (networkId) {
+  function handleNewNetwork(networkId) {
     networkDiv.innerHTML = networkId
   }
 
-  function handleLatestBlock (blockNumber) {
+  function handleLatestBlock(blockNumber) {
     latestBlockDiv.innerHTML = blockNumber
   }
 
-  async function getNetworkAndChainId () {
+  async function getNetworkAndChainId() {
     try {
       /*
       const chainId = await ethereum.request({
@@ -1211,7 +1229,7 @@ const initialize = async (nodeURL) => {
     }
   }
 
-  async function getLatestBlockNumber () {
+  async function getLatestBlockNumber() {
     try {
       const latestBlock = await starcoinProvider.getBlockNumber() || 123
       handleLatestBlock(latestBlock)
@@ -1220,7 +1238,7 @@ const initialize = async (nodeURL) => {
     }
   }
 
-  async function getAccountsList () {
+  async function getAccountsList() {
     try {
       const accountsList = await starcoinProvider.listAccounts()
       handleNewAccounts(accountsList)
@@ -1230,7 +1248,7 @@ const initialize = async (nodeURL) => {
     }
   }
 
-  updateButtons()
+  // updateButtons()
 
   // if (isMetaMaskInstalled()) {
   if (isNodeConnected) {
@@ -1250,8 +1268,8 @@ const initialize = async (nodeURL) => {
       })
       */
       console.log('new accounts get')
-      const newAccounts = await starcoinProvider.listAccounts()
-      handleNewAccounts(newAccounts)
+      // const newAccounts = await starcoinProvider.listAccounts()
+      // handleNewAccounts(newAccounts)
     } catch (err) {
       console.error('Error on init when getting accounts', err)
     }
@@ -1262,7 +1280,7 @@ window.addEventListener('DOMContentLoaded', initialize)
 
 // utils
 
-function getPermissionsDisplayString (permissionsArray) {
+function getPermissionsDisplayString(permissionsArray) {
   if (permissionsArray.length === 0) {
     return 'No permissions found.'
   }
@@ -1270,6 +1288,6 @@ function getPermissionsDisplayString (permissionsArray) {
   return permissionNames.reduce((acc, name) => `${acc}${name}, `, '').replace(/, $/u, '')
 }
 
-function stringifiableToHex (value) {
+function stringifiableToHex(value) {
   return ethers.utils.hexlify(Buffer.from(JSON.stringify(value)))
 }
