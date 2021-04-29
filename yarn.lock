@@ -588,10 +588,10 @@
   dependencies:
     mkdirp "^1.0.4"
 
-"@starcoin/starcoin@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@starcoin/starcoin/-/starcoin-0.2.1.tgz#45fc13758cb5eca905327363509a2a8e21a92be7"
-  integrity sha512-d78z/Rur8P4itDXsIOwTZP+wt+uqqOgBO3tL8FME+BvPCVO78c7uGiaw09vDorw94rQ2iHmjVuolq7tgLx7ZTA==
+"@starcoin/starcoin@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@starcoin/starcoin/-/starcoin-0.2.2.tgz#e458ac847dd5f157fae5286ad4acf742c4010fce"
+  integrity sha512-dNQJGrNseEhGE3hCvTgjfIZEdRRqtRHH6GBrsWI3vk3pIG6xCJeIdq7jF2TJB7nsQ0R1kj1pIhldg5VqovirjA==
   dependencies:
     "@ethersproject/basex" "^5.0.4"
     "@ethersproject/bignumber" "^5.0"
