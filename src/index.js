@@ -608,7 +608,7 @@ const initialize = async (nodeURL) => {
       const txnInfo = await txn.wait(1)
       console.log({ txnInfo })
 
-      sendSTCStatus.innerText = 'Trasaction Completed'
+      sendSTCStatus.innerText = 'Transaction Completed'
 
       const balance = await starcoinProvider.getBalance(toAccount)
       console.log({ balance })
