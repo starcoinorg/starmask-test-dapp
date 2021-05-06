@@ -585,11 +585,23 @@ const initialize = async (nodeURL) => {
       const expirationTimestampSecs = nowSeconds + 43200
 
       const chainId = parseInt(chainIdDiv.innerHTML, 10)
-      const txn_hex = await utils.tx.generateSignedUserTransactionHex(senderPrivateKeyHex, fromAccount, toAccount, sendAmount, maxGasAmount, senderSequenceNumber, expirationTimestampSecs, chainId);
-      console.log({txn_hex})
+      const rawUserTransaction = utils.tx.generateRawUserTransaction(
+        fromAccount,
+        toAccount,
+        sendAmount,
+        maxGasAmount,
+        senderSequenceNumber,
+        expirationTimestampSecs,
+        chainId,
+      )
 
+      const hex = await utils.tx.signRawUserTransaction(
+        senderPrivateKeyHex,
+        rawUserTransaction,
+      )
+      console.log(hex)
 
-      const txn = await starcoinProvider.sendTransaction(txn_hex);
+      const txn = await starcoinProvider.sendTransaction(hex)
       console.log({ 'sendTransactionOutput': txn })
 
 
