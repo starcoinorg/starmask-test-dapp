@@ -2,7 +2,7 @@ import MetaMaskOnboarding from '@metamask/onboarding'
 // eslint-disable-next-line camelcase
 import { encrypt, recoverPersonalSignature, recoverTypedSignatureLegacy, recoverTypedSignature, recoverTypedSignature_v4 } from 'eth-sig-util'
 import { ethers } from 'ethers'
-import { providers, utils } from '@starcoin/starcoin'
+import { providers, utils, crypto_hash } from '@starcoin/starcoin'
 import { toChecksumAddress } from 'ethereumjs-util'
 import BigNumber from 'bignumber.js'
 import { hstBytecode, hstAbi, piggybankBytecode, piggybankAbi } from './constants.json'
@@ -557,13 +557,21 @@ const initialize = async (nodeURL) => {
       console.log({ sendAmountString })
       const senderPrivateKeyHex = document.getElementById('senderPrivateKeyHexInput').value
       console.log({ senderPrivateKeyHex })
+      const chainId = parseInt(chainIdDiv.innerHTML, 10)
 
+      const senderPublicKeyHex = await crypto_hash.privateKeyToPublicKey(senderPrivateKeyHex)
+      const senderSequenceNumber = await starcoinProvider.getSequenceNumber(fromAccount)
       const txnRequest = {
+        chain_id: chainId,
+        gas_unit_price: 1,
+        sender: fromAccount,
+        sender_public_key: senderPublicKeyHex,
+        sequence_number: senderSequenceNumber,
         script: {
           code: '0x1::TransferScripts::peer_to_peer',
           type_args: ['0x1::STC::STC'],
           args: [toAccount, 'x""', sendAmountString],
-        }
+        },
       }
       console.log({ txnRequest })
       const txnOutput = await starcoinProvider.dryRun(txnRequest)
@@ -573,10 +581,8 @@ const initialize = async (nodeURL) => {
       const balanceBefore = await starcoinProvider.getBalance(toAccount)
       console.log({ balanceBefore })
 
-      const senderSequenceNumber = await starcoinProvider.getSequenceNumber(fromAccount)
-
-      // TODO: generate maxGasAmount from contract.dry_run -> gas_used
-      const maxGasAmount = 124191
+      // add 10% of estimated gas_used from dry_run
+      const maxGasAmount = Math.ceil(txnOutput.gas_used * 1.1)
 
       // because the time system in dev network is relatively static, 
       // we should use nodeInfo.now_seconds instead of using new Date().getTime()
@@ -584,7 +590,7 @@ const initialize = async (nodeURL) => {
       // expired after 12 hours since Unix Epoch
       const expirationTimestampSecs = nowSeconds + 43200
 
-      const chainId = parseInt(chainIdDiv.innerHTML, 10)
+
       const rawUserTransaction = utils.tx.generateRawUserTransaction(
         fromAccount,
         toAccount,
