@@ -2,8 +2,8 @@ import MetaMaskOnboarding from '@metamask/onboarding'
 // eslint-disable-next-line camelcase
 import { encrypt, recoverPersonalSignature, recoverTypedSignatureLegacy, recoverTypedSignature, recoverTypedSignature_v4 } from 'eth-sig-util'
 import { ethers } from 'ethers'
-import { providers, utils, crypto_hash } from '@starcoin/starcoin'
-import { toChecksumAddress } from 'ethereumjs-util'
+import { providers, utils, crypto_hash, encoding, starcoin_types } from '@starcoin/starcoin'
+import { toChecksumAddress, stripHexPrefix, addHexPrefix } from 'ethereumjs-util'
 import BigNumber from 'bignumber.js'
 import { hstBytecode, hstAbi, piggybankBytecode, piggybankAbi } from './constants.json'
 
@@ -30,7 +30,7 @@ let isNodeConnected
 
 const currentUrl = new URL(window.location.href)
 const forwarderOrigin = currentUrl.hostname === 'localhost'
-  ? 'http://localhost:9010'
+  ? 'http://localhost:9022'
   : undefined
 
 // const { isMetaMaskInstalled } = MetaMaskOnboarding
@@ -196,6 +196,8 @@ const initialize = async (nodeURL) => {
 
   const onClickConnectNode = async () => {
     try {
+      // document.getElementById('nodeURLInput').value = 'http://localhost:9850'
+      // document.getElementById('nodeURLInput').value = 'https://barnard-seed.starcoin.org'
       let inputNodeURL = document.getElementById('nodeURLInput').value
       nodeURL = inputNodeURL
       console.log({ nodeURL })
@@ -549,9 +551,30 @@ const initialize = async (nodeURL) => {
       })
       console.log(result)
       */
+      // document.getElementById('fromAccountInput').value = '0x3f19d5422824f47e6c021978cee98f35'
+      // document.getElementById('toAccountInput').value = '0xe61afd587c8dccbc1c56663aac403431'
+      // document.getElementById('amountInput').value = 1000000000
+      // document.getElementById('senderPrivateKeyHexInput').value = '0xc81df69c93660dd47a1d5e8801396432a054d8bd02eccf0189f94fb69249be82'
+
       console.log('send stc button clicked')
       const fromAccount = document.getElementById('fromAccountInput').value
       const toAccount = document.getElementById('toAccountInput').value
+      let toAccountAddress = ''
+      let toAccountAuthKey = ''
+      if (toAccount.slice(0, 3) === 'stc') {
+        const receiptIdentifier = starcoin_types.ReceiptIdentifier.decode(toAccount)
+        toAccountAddress = stripHexPrefix(encoding.addressFromSCS(receiptIdentifier.accountAddress))
+        toAccountAuthKey = receiptIdentifier.authKey.hex()
+      } else {
+        toAccountAddress = toAccount
+        toAccountAuthKey = ''
+      }
+      const resource = await starcoinProvider.getResource(toAccountAddress, '0x1::Account::Balance<0x1::STC::STC>')
+      if (!resource) {
+        // eslint-disable-next-line no-alert
+        alert('To\'s address is not exists on this chain, please provide the receiptIdentifier, and try again.')
+        return false
+      }
       const sendAmount = parseInt(document.getElementById('amountInput').value, 10)
       const sendAmountString = `${sendAmount.toString()}u128`
       console.log({ sendAmountString })
@@ -567,10 +590,11 @@ const initialize = async (nodeURL) => {
         sender: fromAccount,
         sender_public_key: senderPublicKeyHex,
         sequence_number: senderSequenceNumber,
+        max_gas_amount: 10000000,
         script: {
           code: '0x1::TransferScripts::peer_to_peer',
           type_args: ['0x1::STC::STC'],
-          args: [toAccount, 'x""', sendAmountString],
+          args: [addHexPrefix(toAccountAddress), `x"${toAccountAuthKey}"`, sendAmountString],
         },
       }
       console.log({ txnRequest })
@@ -578,13 +602,13 @@ const initialize = async (nodeURL) => {
       console.log({ txnOutput })
       sendSTCStatus.innerText = "Sending STC..."
 
-      const balanceBefore = await starcoinProvider.getBalance(toAccount)
+      const balanceBefore = await starcoinProvider.getBalance(toAccountAddress)
       console.log({ balanceBefore })
 
       // add 10% of estimated gas_used from dry_run
       const maxGasAmount = Math.ceil(txnOutput.gas_used * 1.1)
 
-      // because the time system in dev network is relatively static, 
+      // because the time system in dev network is relatively static,
       // we should use nodeInfo.now_seconds instead of using new Date().getTime()
       const nowSeconds = await starcoinProvider.getNowSeconds()
       // expired after 12 hours since Unix Epoch
@@ -600,6 +624,7 @@ const initialize = async (nodeURL) => {
         expirationTimestampSecs,
         chainId,
       )
+      console.log({ rawUserTransaction })
 
       const hex = await utils.tx.signRawUserTransaction(
         senderPrivateKeyHex,
@@ -608,15 +633,14 @@ const initialize = async (nodeURL) => {
       console.log(hex)
 
       const txn = await starcoinProvider.sendTransaction(hex)
-      console.log({ 'sendTransactionOutput': txn })
-
+      console.log('sendTransactionOutput', txn)
 
       const txnInfo = await txn.wait(1)
       console.log({ txnInfo })
 
       sendSTCStatus.innerText = 'Transaction Completed'
 
-      const balance = await starcoinProvider.getBalance(toAccount)
+      const balance = await starcoinProvider.getBalance(toAccountAddress)
       console.log({ balance })
 
       /*
