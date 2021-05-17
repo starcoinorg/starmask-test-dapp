@@ -1,6 +1,6 @@
 {
   "name": "@starcoin/test-dapp",
-  "version": "4.0.1",
+  "version": "0.5.0",
   "description": "A simple dapp used in Starcoin e2e tests.",
   "engines": {
     "node": ">= 10"
