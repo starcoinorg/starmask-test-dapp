@@ -411,10 +411,10 @@
   dependencies:
     mkdirp "^1.0.4"
 
-"@starcoin/starcoin@^0.2.4":
-  version "0.2.4"
-  resolved "https://registry.npmjs.org/@starcoin/starcoin/-/starcoin-0.2.4.tgz#fac533b8b5fb4bb4383aef57bfdf78bbbc9e963e"
-  integrity sha512-1VK8UVWylyFKzeHXiKi9sH8R/x4bFfbhpP7Z8n9SrHIbZe1x6YtV7290xtJMY2Cu3V70GWWsKBGAIiyIv1bHnQ==
+"@starcoin/starcoin@^0.2.9":
+  version "0.2.9"
+  resolved "https://registry.yarnpkg.com/@starcoin/starcoin/-/starcoin-0.2.9.tgz#1bde60d02bb07c7936f0a6b426d6deef60479822"
+  integrity sha512-MXxzrM3vJhe6294nc6tWvdEhP17+h+7xtxj0oJjE6xPxZ+6y4GUxqnbpHHz4blwbCywKYP8//4BHAHH3EQIXrQ==
   dependencies:
     "@ethersproject/basex" "^5.0.4"
     "@ethersproject/bignumber" "^5.0"
@@ -425,6 +425,7 @@
     "@ethersproject/properties" "^5.0.4"
     "@ethersproject/sha2" "^5.0.4"
     "@ethersproject/web" "^5.0.9"
+    bech32 "^2.0.0"
     ethereumjs-util "5.1.0"
     is-alphabetical "^1.0.4"
     is-alphanumerical "^1.0.4"
@@ -956,6 +957,11 @@ bech32@1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/bech32/-/bech32-1.1.4.tgz#e38c9f37bf179b8eb16ae3a772b40c356d4832e9"
   integrity sha512-s0IrSOzLlbvX7yp4WBfPITzpAU8sqQcpsmwXDiKwrG4r491vwCO/XpejasRNl0piBMe/DvP4Tz0mIS/X1DPJBQ==
+
+bech32@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/bech32/-/bech32-2.0.0.tgz#078d3686535075c8c79709f054b1b226a133b355"
+  integrity sha512-LcknSilhIGatDAsY1ak2I8VtGaHNhgMSYVxFrGLXv+xLHytaKZKcaUJJUE7qmBr7h33o5YQwP55pMI0xmkpJwg==
 
 big.js@^5.2.2:
   version "5.2.2"
