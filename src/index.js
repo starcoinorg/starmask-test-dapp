@@ -568,12 +568,12 @@ const initialize = async (nodeURL) => {
       } else {
         toAccountAddress = toAccount
         toAccountAuthKey = ''
-      }
-      const resource = await starcoinProvider.getResource(toAccountAddress, '0x1::Account::Balance<0x1::STC::STC>')
-      if (!resource) {
-        // eslint-disable-next-line no-alert
-        alert('To\'s address is not exists on this chain, please provide the receiptIdentifier, and try again.')
-        return false
+        const resource = await starcoinProvider.getResource(toAccountAddress, '0x1::Account::Balance<0x1::STC::STC>')
+        if (!resource) {
+          // eslint-disable-next-line no-alert
+          alert('To\'s address is not exists on this chain, please provide the receiptIdentifier, and try again.')
+          return false
+        }
       }
       const sendAmount = parseInt(document.getElementById('amountInput').value, 10)
       const sendAmountString = `${sendAmount.toString()}u128`
