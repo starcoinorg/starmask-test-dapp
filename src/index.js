@@ -2,7 +2,8 @@ import MetaMaskOnboarding from '@metamask/onboarding'
 // eslint-disable-next-line camelcase
 import { encrypt, recoverPersonalSignature, recoverTypedSignatureLegacy, recoverTypedSignature, recoverTypedSignature_v4 } from 'eth-sig-util'
 import { ethers } from 'ethers'
-import { providers, utils, crypto_hash, encoding, starcoin_types } from '@starcoin/starcoin'
+// eslint-disable-next-line camelcase
+import { providers, utils, encoding, starcoin_types } from '@starcoin/starcoin'
 import { toChecksumAddress, stripHexPrefix, addHexPrefix } from 'ethereumjs-util'
 import BigNumber from 'bignumber.js'
 import { hstBytecode, hstAbi, piggybankBytecode, piggybankAbi } from './constants.json'
@@ -582,7 +583,7 @@ const initialize = async (nodeURL) => {
       console.log({ senderPrivateKeyHex })
       const chainId = parseInt(chainIdDiv.innerHTML, 10)
 
-      const senderPublicKeyHex = await crypto_hash.privateKeyToPublicKey(senderPrivateKeyHex)
+      const senderPublicKeyHex = await encoding.privateKeyToPublicKey(senderPrivateKeyHex)
       const senderSequenceNumber = await starcoinProvider.getSequenceNumber(fromAccount)
       const txnRequest = {
         chain_id: chainId,
