@@ -563,9 +563,9 @@ const initialize = async (nodeURL) => {
       let toAccountAddress = ''
       let toAccountAuthKey = ''
       if (toAccount.slice(0, 3) === 'stc') {
-        const receiptIdentifier = starcoin_types.ReceiptIdentifier.decode(toAccount)
-        toAccountAddress = stripHexPrefix(encoding.addressFromSCS(receiptIdentifier.accountAddress))
-        toAccountAuthKey = receiptIdentifier.authKey.hex()
+        const receiptIdentifier = encoding.decodeReceiptIdentifier(toAccount)
+        toAccountAddress = receiptIdentifier.accountAddress
+        toAccountAuthKey = receiptIdentifier.authKey
       } else {
         toAccountAddress = toAccount
         toAccountAuthKey = ''
