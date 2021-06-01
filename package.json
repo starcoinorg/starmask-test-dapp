@@ -1,7 +1,7 @@
 {
-  "name": "@starcoin/test-dapp",
-  "version": "0.5.0",
-  "description": "A simple dapp used in Starcoin e2e tests.",
+  "name": "starmask-test-dapp",
+  "version": "0.6.0",
+  "description": "A simple dapp used in Starmask e2e tests.",
   "engines": {
     "node": ">= 10"
   },
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Starcoin/test-dapp.git"
+    "url": "git+https://github.com/starcoinorg/starmask-test-dapp.git"
   },
   "files": [
     "dist/"
@@ -27,9 +27,9 @@
   "author": "Starcoin",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Starcoin/test-dapp/issues"
+    "url": "https://github.com/starcoinorg/starmask-test-dapp/issues"
   },
-  "homepage": "https://metamask.github.io/test-dapp",
+  "homepage": "https://github.com/starcoinorg/starmask-test-dapp",
   "dependencies": {
     "bignumber.js": "^4.1.0"
   },
