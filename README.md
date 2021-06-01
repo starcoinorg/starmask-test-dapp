@@ -1,6 +1,6 @@
-# Starcoin Test Dapp
+# Starmask Test Dapp
 
-This is a simple test dapp for use in Starcoin e2e tests and manual QA.
+This is a simple test dapp for use in Starmask e2e tests and manual QA.
 
 Currently hosted [here](https://starmask-test-dapp.vercel.app).
 
