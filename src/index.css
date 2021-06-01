@@ -34,6 +34,7 @@ header {
 
 #mm-logo {
   width: 50%;
+  margin: 0px auto;
 }
 
 /* Encrypt/Decrypt */

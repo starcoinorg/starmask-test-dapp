@@ -2,8 +2,8 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Starmask E2E Test Dapp</title>
-  <link rel="icon" type="image/png" href="starcoin-logo.png" />
+  <title>E2E Test Dapp</title>
+  <link rel="icon" type="image/svg" href="stc.svg" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.14.1/css/mdb.min.css" rel="stylesheet" />
@@ -15,583 +15,63 @@
     <header>
       <div id="logo-container">
         <h1 id="logo-text" class="text-center">
-          Starmask E2E Test Dapp
+          E2E Test Dapp
         </h1>
-
-        <img class="mx-auto" id="mm-logo" src="starcoin-logo.png" />
+        <img id="mm-logo" src="logo-horizontal.png" />
       </div>
     </header>
     <section>
-      <section>
-        <div class="row d-flex justify-content-center">
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
-            <div class="card">
-              <div class="card-body">
-                <h3 class="card-title">
-                  Node URL
-                </h3>
-                <div class="form-outline mb-3">
-                  <input id="nodeURLInput" type="text" class="form-control form-control-lg" />
-                </div>
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="connectNodeButton">
-                  Connect Node
-                </button>
-                <div><small>Note: Starcoin node APIs should be opened. HTTPS is needed for online version.</small></div>
-              </div>
+      <h3 class="card-title">
+        Status
+      </h3>
+
+      <div class="row">
+        <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
+          <p class="info-text alert alert-primary">
+            Network: <span id="network"></span>
+          </p>
+        </div>
+
+        <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
+          <p class="info-text alert alert-secondary">
+            ChainId: <span id="chainId"></span>
+          </p>
+        </div>
+
+        <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
+          <p class="info-text alert alert-success">
+            Accounts: <span id="accounts"></span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="row d-flex justify-content-center">
+        <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title">
+                Basic Actions
+              </h4>
+
+              <button class="btn btn-primary btn-lg btn-block mb-3" id="connectButton" disabled>
+                Connect
+              </button>
+
+              <button class="btn btn-primary btn-lg btn-block mb-3" id="getAccounts">
+                account.list
+              </button>
+
+              <p class="info-text alert alert-secondary">
+                account.list result: <span id="getAccountsResult"></span>
+              </p>
             </div>
           </div>
         </div>
-      </section>
-      <section>
-        <h3 class="card-title">
-          Status
-        </h3>
+      </div>
+    </section>
 
-        <div class="row">
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
-            <p class="info-text alert alert-primary">
-              Network: <span id="network"></span>
-            </p>
-          </div>
-
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
-            <p class="info-text alert alert-secondary">
-              ChainId: <span id="chainId"></span>
-            </p>
-          </div>
-
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
-            <p class="info-text alert alert-secondary">
-              Latest Block: <span id="latestBlock"></span>
-            </p>
-          </div>
-
-          <!--
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
-            <p class="info-text alert alert-success">
-              Accounts: <span id="accounts"></span>
-            </p>
-          </div>
-        </div>
-        -->
-      </section>
-
-      <section>
-        <div class="row d-flex justify-content-center">
-
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title">
-                  Basic Actions
-                </h4>
-
-                <!--
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="connectButton"
-                  disabled
-                >
-                  Connect
-                </button>
-                -->
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="getAccounts" disabled>
-                  Get Starcoin Accounts
-                </button>
-
-                <div class="info-text alert alert-secondary">
-                  <h5>Starcoin accounts on the Node:</h5>
-                  <ul class="list-group" id="getAccountsResult">
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
-            <div class="card full-width">
-              <div class="card-body">
-                <h4 class="card-title">
-                  Account Actions
-                </h4>
-
-                <h5 class="card-title">
-                  Address
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="accountAddressInput" type="text" class="form-control form-control-lg" required />
-                </div>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="getBalanceButton">
-                  Get Balance
-                </button>
-                <hr />
-                <div class="text-center">
-                  <p>
-                  <h5>Account Balance: </h5>
-                  </p>
-                  <h1><span id="accountBalanceResult" class="badge bg-success">0</span></h1>
-                  <h6>STC</h6>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
-            <div class="card full-width">
-              <div class="card-body">
-                <h4 class="card-title">
-                  Send STC
-                </h4>
-
-                <h5 class="card-title">
-                  From
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="fromAccountInput" type="text" class="form-control form-control-lg" />
-                </div>
-
-                <h5 class="card-title">
-                  To(address or receiptIdentifier)
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="toAccountInput" type="text" class="form-control form-control-lg" />
-                </div>
-                <div><small>Note: address is for existing account only </small></div>
-
-                <h5 class="card-title">
-                  Amount of NanoSTC
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="amountInput" type="text" class="form-control form-control-lg" />
-                </div>
-                <div><small>Note: 1 STC = 1000000000 NanoSTC </small></div>
-
-                <br />
-
-                <h5 class="card-title">
-                  PrivateKey of <b>Sender</b>
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="senderPrivateKeyHexInput" class="form-control form-control-lg" required />
-                </div>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="sendSTCButton">
-                  Send
-                </button>
-                <p class="info-text alert alert-secondary">
-                  Sending Status: <span id="sendSTCStatus">Not clicked</span>
-                </p>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <!--
-      <section>
-        <div class="row d-flex justify-content-center">
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title">
-                  Permissions Actions
-                </h4>
-
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="requestPermissions"
-                >
-                  Request Permissions
-                </button>
-
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="getPermissions"
-                >
-                  Get Permissions
-                </button>
-
-                <p class="info-text alert alert-secondary">
-                  Permissions result: <span id="permissionsResult"></span>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      -->
-
-      <section>
-        <div class="row">
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
-            <div class="card full-width">
-              <div class="card-body">
-                <h4 class="card-title">
-                  Contract Actions
-                </h4>
-
-                <h5 class="card-title">
-                  Signer Address
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="contractSignerInput" type="text" class="form-control form-control-lg" required />
-                </div>
-
-                <h5 class="card-title">
-                  Contract Code
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="contractCodeInput" type="text" class="form-control form-control-lg" required />
-                </div>
-                <div><small>Note: contract code contains 3 parts: address, module and function, for example,
-                    "0x1::TransferScripts::peer_to_peer"</small></div>
-                <br />
-
-                <h5 class="card-title">
-                  Type Arguments of Contract
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="typeArgumentsInput" type="text" class="form-control form-control-lg" required />
-                </div>
-                <div><small>Note: type argument look like "0x1::STC::STC", use English comma to input multiple arguments
-                  </small></div>
-                <br />
-
-                <h5 class="card-title">
-                  Function Arguments of Contract
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="functionArgumentsInput" type="text" class="form-control form-control-lg" required />
-                </div>
-                <div><small>Note: use English comma to input multiple arguments</small></div>
-
-                <br />
-
-                <h5 class="card-title">
-                  Password to unlock <b>Signer</b>
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="contractSignerPasswordInput" type="password" class="form-control form-control-lg"
-                    required />
-                </div>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="executeContractButton" disabled>
-                  Execute Contract
-                </button>
-
-                <!--
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="depositButton"
-                  disabled
-                >
-                  Deposit
-                </button>
-
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="withdrawButton"
-                  disabled
-                >
-                  Withdraw
-                </button>
-                -->
-
-                <p class="info-text alert alert-secondary">
-                  Contract Status: <span id="contractStatus">Not clicked</span>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
-            <div class="card full-width">
-              <div class="card-body">
-                <h4 class="card-title">
-                  Sign Message
-                </h4>
-
-                <h5 class="card-title">
-                  Signer Address
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="messageSignerInput" type="text" class="form-control form-control-lg" required />
-                </div>
-
-                <h5 class="card-title">
-                  Messsage
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="signMessageInput" type="text" class="form-control form-control-lg" required />
-                </div>
-                <div><small>Note: message for signing should be a string</small></div>
-                <br />
-
-                <h5 class="card-title">
-                  Password to unlock <b>Signer</b>
-                </h5>
-                <div class="form-outline mb-3">
-                  <input id="messageSignerPasswordInput" type="password" class="form-control form-control-lg"
-                    required />
-                </div>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="signMessageButton" disabled>
-                  Sign Message
-                </button>
-
-                <!--
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="depositButton"
-                  disabled
-                >
-                  Deposit
-                </button>
-
-                <button
-                  class="btn btn-primary btn-lg btn-block mb-3"
-                  id="withdrawButton"
-                  disabled
-                >
-                  Withdraw
-                </button>
-                -->
-
-                <p class="info-text alert alert-secondary">
-                  Message Status: <span id="signMessageStatus">Not clicked</span>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
-            <div class="card full-width">
-              <div class="card-body">
-                <h4 class="card-title">
-                  Send Tokens
-                </h4>
-
-                <p class="info-text alert alert-success">
-                  Token: <span id="tokenAddress"></span>
-                </p>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="createToken" disabled>
-                  Create Token
-                </button>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="transferTokens" disabled>
-                  Transfer Tokens
-                </button>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="approveTokens" disabled>
-                  Approve Tokens
-                </button>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="transferTokensWithoutGas" disabled>
-                  Transfer Tokens Without Gas
-                </button>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="approveTokensWithoutGas" disabled>
-                  Approve Tokens Without Gas
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section>
-        <div class="row">
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
-            <div class="card full-width">
-              <div class="card-body">
-                <h4>
-                  Eth Sign
-                </h4>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="ethSign" disabled>
-                  Sign
-                </button>
-
-                <p class="info-text alert alert-warning">
-                  Result: <span id="ethSignResult"></span>
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
-            <div class="card full-width">
-              <div class="card-body">
-                <h4>
-                  Personal Sign
-                </h4>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="personalSign" disabled>
-                  Sign
-                </button>
-
-                <p class="info-text alert alert-warning">
-                  Result: <span id="personalSignResult"></span>
-                </p>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="personalSignVerify" disabled>
-                  Verify
-                </button>
-
-                <p class="info-text alert alert-warning">
-                  eth-sig-util recovery result:
-                  <span id="personalSignVerifySigUtilResult"></span>
-                </p>
-                <p class="info-text alert alert-warning">
-                  personal_ecRecover result:
-                  <span id="personalSignVerifyECRecoverResult"></span>
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
-            <div class="card full-width">
-              <div class="card-body">
-                <h4 class="card-title">
-                  Encrypt / Decrypt
-                </h4>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="getEncryptionKeyButton" disabled>
-                  Get Encryption Key
-                </button>
-
-                <hr />
-
-                <div id="encrypt-message-form">
-                  <input class="form-control" type="text" placeholder="Message to encrypt" id="encryptMessageInput" />
-
-                  <button class="btn btn-primary btn-lg btn-block mb-3" id="encryptButton" disabled>
-                    Encrypt
-                  </button>
-                </div>
-
-                <hr />
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="decryptButton" disabled>
-                  Decrypt
-                </button>
-
-                <p class="info-text alert alert-secondary">
-                  Encryption key: <span id="encryptionKeyDisplay"></span>
-                </p>
-
-                <p class="info-text text-truncate alert alert-secondary">
-                  Ciphertext: <span id="ciphertextDisplay"></span>
-                </p>
-
-                <p class="info-text alert alert-secondary">
-                  Cleartext: <span id="cleartextDisplay"></span>
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
-            <div class="card full-width">
-              <div class="card-body">
-                <h4>
-                  Sign Typed Data
-                </h4>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="signTypedData" disabled>
-                  Sign
-                </button>
-
-                <p class="info-text alert alert-warning">
-                  Result: <span id="signTypedDataResult"></span>
-                </p>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="signTypedDataVerify" disabled>
-                  Verify
-                </button>
-
-                <p class="info-text alert alert-warning">
-                  Recovery result:
-                  <span id="signTypedDataVerifyResult"></span>
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
-            <div class="card full-width">
-              <div class="card-body">
-                <h4>
-                  Sign Typed Data V3
-                </h4>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="signTypedDataV3" disabled>
-                  Sign
-                </button>
-
-                <p class="info-text alert alert-warning">
-                  Result:
-                  <span id="signTypedDataV3Result"></span>
-                </p>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="signTypedDataV3Verify" disabled>
-                  Verify
-                </button>
-
-                <p class="info-text alert alert-warning">
-                  Recovery result:
-                  <span id="signTypedDataV3VerifyResult"></span>
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
-            <div class="card full-width">
-              <div class="card-body">
-                <h4>
-                  Sign Typed Data V4
-                </h4>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="signTypedDataV4" disabled>
-                  Sign
-                </button>
-
-                <p class="info-text alert alert-warning">
-                  Result:
-                  <span id="signTypedDataV4Result"></span>
-                </p>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="signTypedDataV4Verify" disabled>
-                  Verify
-                </button>
-
-                <p class="info-text alert alert-warning">
-                  Recovery result:
-                  <span id="signTypedDataV4VerifyResult"></span>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section>
-        <div class="row d-flex justify-content-center">
-          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title">
-                  Add Ethereum Chain
-                </h4>
-
-                <button class="btn btn-primary btn-lg btn-block mb-3" id="addEthereumChain" disabled>
-                  xDAI
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
   </main>
 
   <script src="bundle.js" defer></script>
