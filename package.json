@@ -1,6 +1,6 @@
 {
   "name": "starmask-test-dapp",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "description": "A simple dapp used in Starmask e2e tests.",
   "engines": {
     "node": ">= 10"
