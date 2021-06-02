@@ -118,15 +118,11 @@ const initialize = async () => {
 
   async function getNetworkAndChainId() {
     try {
-      const chainId = await window.starcoin.request({
-        method: 'stc_chainId',
+      const chainInfo = await window.starcoin.request({
+        method: 'chain.id',
       })
-      handleNewChain(chainId)
-
-      const networkId = await window.starcoin.request({
-        method: 'net_version',
-      })
-      handleNewNetwork(networkId)
+      handleNewChain(`0x${chainInfo.id.toString(16)}`)
+      handleNewNetwork(chainInfo.id)
     } catch (err) {
       console.error(err)
     }
@@ -139,10 +135,6 @@ const initialize = async () => {
     window.starcoin.autoRefreshOnNetworkChange = false
     getNetworkAndChainId()
 
-    window.starcoin.on('chainChanged', handleNewChain)
-    window.starcoin.on('networkChanged', handleNewNetwork)
-    window.starcoin.on('accountsChanged', handleNewAccounts)
-
     try {
       const newAccounts = await window.starcoin.request({
         method: 'stc_accounts',
@@ -151,6 +143,10 @@ const initialize = async () => {
     } catch (err) {
       console.error('Error on init when getting accounts', err)
     }
+
+    window.starcoin.on('chainChanged', handleNewChain)
+    window.starcoin.on('networkChanged', handleNewNetwork)
+    window.starcoin.on('accountsChanged', handleNewAccounts)
   }
 }
 
