@@ -375,14 +375,6 @@
   resolved "https://registry.yarnpkg.com/@metamask/eslint-config/-/eslint-config-4.0.0.tgz#0c1461a49e6abc924baf23063d58050467d235dd"
   integrity sha512-DYifRCG9N3SwacnMVQqMrQBW4eCQN6QoUpcYUMA8wQBnVwGQ3AbDNz9NOy2FST6JJvsPnc6E/i0myrS3tAKg0w==
 
-"@metamask/onboarding@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@metamask/onboarding/-/onboarding-1.0.0.tgz#500c65b58d1e09419b049638024db040cce30dc6"
-  integrity sha512-GnR1Sv87plYM58RYRC7V04oo52JEL4zDmgoLKLdjr59ma60lK6LzZz3k9uJscqUAfwtgKurXHz2Hx5r2oBC6vQ==
-  dependencies:
-    bowser "^2.9.0"
-    tslib "^1.11.0"
-
 "@nodelib/fs.scandir@2.1.3":
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.3.tgz#3a582bdb53804c6ba6d146579c46e52130cf4a3b"
@@ -411,10 +403,10 @@
   dependencies:
     mkdirp "^1.0.4"
 
-"@starcoin/starcoin@^0.2.9":
-  version "0.2.9"
-  resolved "https://registry.yarnpkg.com/@starcoin/starcoin/-/starcoin-0.2.9.tgz#1bde60d02bb07c7936f0a6b426d6deef60479822"
-  integrity sha512-MXxzrM3vJhe6294nc6tWvdEhP17+h+7xtxj0oJjE6xPxZ+6y4GUxqnbpHHz4blwbCywKYP8//4BHAHH3EQIXrQ==
+"@starcoin/starcoin@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/@starcoin/starcoin/-/starcoin-1.0.2.tgz#ea716728d833eca0eaa83f621dcd7c83034d4e6e"
+  integrity sha512-nqRIvoBcFQQo46NgxJcAhwJqCEa6psb4OcBoEcZbrCg7Z1NPZypCiO4JrkpL7zGbtfjo/O+kZ3YBlRxhOK+mWA==
   dependencies:
     "@ethersproject/basex" "^5.0.4"
     "@ethersproject/bignumber" "^5.0"
@@ -425,6 +417,7 @@
     "@ethersproject/properties" "^5.0.4"
     "@ethersproject/sha2" "^5.0.4"
     "@ethersproject/web" "^5.0.9"
+    "@starcoin/stc-ed25519" "^0.1.0"
     bech32 "^2.0.0"
     ethereumjs-util "5.1.0"
     is-alphabetical "^1.0.4"
@@ -435,8 +428,21 @@
     is-word-character "^1.0.4"
     js-sha3 "^0.8.0"
     jssha "^3.2.0"
-    noble-ed25519 "^1.0.4"
+    read-bigint "^0.1.6"
     ws "7.2.3"
+
+"@starcoin/starmask-onboarding@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@starcoin/starmask-onboarding/-/starmask-onboarding-1.0.0.tgz#702917af8713d80d054bbbb5ee484cfa5762a0b8"
+  integrity sha512-A3pLADxq7UDtSbgyrZgGv3RX7nH3/qVhpYS9ICxMSP3vs/bwmbE3rmIH20UVtofeLAcZq9OElhk5nQdKhPH+pA==
+  dependencies:
+    bowser "^2.9.0"
+    tslib "^1.11.0"
+
+"@starcoin/stc-ed25519@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/@starcoin/stc-ed25519/-/stc-ed25519-0.1.0.tgz#56e65b388889a5953e01806cc3deaa20ddaf8174"
+  integrity sha512-H3oz8fNQD604Ak0cSNTDcbfzLxsB9XAKw1aJO7iBPuZWcHF8bgn7xxOzsinx5V5LGaPeleWc/Qw4vCKnK6cxHQ==
 
 "@types/anymatch@*":
   version "1.3.1"
@@ -3906,11 +3912,6 @@ nice-try@^1.0.4:
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
-noble-ed25519@^1.0.4:
-  version "1.2.1"
-  resolved "https://registry.npmjs.org/noble-ed25519/-/noble-ed25519-1.2.1.tgz#6aadb1fa57e054f40483d71d470c70c0fddc0917"
-  integrity sha512-5ZoYpKxQtyQHVk8GHsAr1BsM91ogFuuIsJkKM116t4PxqJRZrBkg1i33wUu852Minr9+CDR8jqPRrhQ/l+msbQ==
-
 node-forge@^0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.10.0.tgz#32dea2afb3e9926f02ee5ce8794902691a676bf3"
@@ -4521,6 +4522,11 @@ raw-body@2.4.0:
     http-errors "1.7.2"
     iconv-lite "0.4.24"
     unpipe "1.0.0"
+
+read-bigint@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.npmjs.org/read-bigint/-/read-bigint-0.1.6.tgz#451fdb5ef5a9bb425fba1f92511038e2a54e5f26"
+  integrity sha512-WHfCMBWes972LRSGYb1/mTW6yy83DQ28Lj94TfVM1HIhFf2I7Di09bUoc8+pPsx4JXgEge2r0d9y+7lj6x3j4g==
 
 read-pkg-up@^2.0.0:
   version "2.0.0"
