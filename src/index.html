@@ -2,7 +2,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>E2E Test Dapp</title>
+  <title>Starmask E2E Test Dapp</title>
   <link rel="icon" type="image/svg" href="stc.svg" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
@@ -40,7 +40,7 @@
 
         <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
           <p class="info-text alert alert-success">
-            Accounts: <span id="accounts"></span>
+            SelectedAccount: <span id="accounts"></span>
           </p>
         </div>
       </div>
@@ -60,11 +60,11 @@
               </button>
 
               <button class="btn btn-primary btn-lg btn-block mb-3" id="getAccounts">
-                account.list
+                stc_accounts
               </button>
 
               <p class="info-text alert alert-secondary">
-                account.list result: <span id="getAccountsResult"></span>
+                stc_accounts result: <span id="getAccountsResult"></span>
               </p>
             </div>
           </div>
@@ -72,6 +72,31 @@
       </div>
     </section>
 
+    <section>
+      <div class="row d-flex justify-content-center">
+        <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title">
+                Permissions Actions
+              </h4>
+
+              <button class="btn btn-primary btn-lg btn-block mb-3" id="requestPermissions">
+                Request Permissions
+              </button>
+
+              <button class="btn btn-primary btn-lg btn-block mb-3" id="getPermissions">
+                Get Permissions
+              </button>
+
+              <p class="info-text alert alert-secondary">
+                Permissions result: <span id="permissionsResult"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script src="bundle.js" defer></script>

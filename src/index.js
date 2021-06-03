@@ -20,6 +20,12 @@ const onboardButton = document.getElementById('connectButton')
 const getAccountsButton = document.getElementById('getAccounts')
 const getAccountsResults = document.getElementById('getAccountsResult')
 
+// Permissions Actions Section
+const requestPermissionsButton = document.getElementById('requestPermissions')
+const getPermissionsButton = document.getElementById('getPermissions')
+const permissionsResult = document.getElementById('permissionsResult')
+
+
 const initialize = async () => {
   console.log('initialize')
   try {
@@ -97,6 +103,35 @@ const initialize = async () => {
         getAccountsResults.innerHTML = `Error: ${err.message}`
       }
     }
+
+    /**
+     * Permissions
+     */
+
+    requestPermissionsButton.onclick = async () => {
+      try {
+        const permissionsArray = await window.starcoin.request({
+          method: 'wallet_requestPermissions',
+          params: [{ stc_accounts: {} }],
+        })
+        permissionsResult.innerHTML = getPermissionsDisplayString(permissionsArray)
+      } catch (err) {
+        console.error(err)
+        permissionsResult.innerHTML = `Error: ${err.message}`
+      }
+    }
+
+    getPermissionsButton.onclick = async () => {
+      try {
+        const permissionsArray = await window.starcoin.request({
+          method: 'wallet_getPermissions',
+        })
+        permissionsResult.innerHTML = getPermissionsDisplayString(permissionsArray)
+      } catch (err) {
+        console.error(err)
+        permissionsResult.innerHTML = `Error: ${err.message}`
+      }
+    }
   }
 
   function handleNewAccounts(newAccounts) {
@@ -151,3 +186,13 @@ const initialize = async () => {
 }
 
 window.addEventListener('DOMContentLoaded', initialize)
+
+// utils
+
+function getPermissionsDisplayString(permissionsArray) {
+  if (permissionsArray.length === 0) {
+    return 'No permissions found.'
+  }
+  const permissionNames = permissionsArray.map((perm) => perm.parentCapability)
+  return permissionNames.reduce((acc, name) => `${acc}${name}, `, '').replace(/, $/u, '')
+}
