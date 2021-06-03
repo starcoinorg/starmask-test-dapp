@@ -1,4 +1,5 @@
 import StarMaskOnboarding from '@starcoin/starmask-onboarding'
+import { providers, utils, encoding, starcoin_types } from '@starcoin/starcoin'
 import { ethers } from 'ethers'
 
 let starcoinProvider
@@ -25,6 +26,8 @@ const requestPermissionsButton = document.getElementById('requestPermissions')
 const getPermissionsButton = document.getElementById('getPermissions')
 const permissionsResult = document.getElementById('permissionsResult')
 
+// Send Eth Section
+const sendButton = document.getElementById('sendButton')
 
 const initialize = async () => {
   console.log('initialize')
@@ -46,9 +49,10 @@ const initialize = async () => {
   let accountButtonsInitialized = false
 
   const accountButtons = [
+    sendButton,
   ]
 
-  const isMetaMaskConnected = () => accounts && accounts.length > 0
+  const isStarMaskConnected = () => accounts && accounts.length > 0
 
   const onClickInstall = () => {
     onboardButton.innerText = 'Onboarding in progress'
@@ -68,11 +72,21 @@ const initialize = async () => {
   }
 
   const updateButtons = () => {
+    const accountButtonsDisabled = !isStarMaskInstalled() || !isStarMaskConnected()
+    if (accountButtonsDisabled) {
+      for (const button of accountButtons) {
+        button.disabled = true
+      }
+      // clearTextDisplays()
+    } else {
+      sendButton.disabled = false
+    }
+
     if (!isStarMaskInstalled()) {
       onboardButton.innerText = 'Click here to install StarMask!'
       onboardButton.onclick = onClickInstall
       onboardButton.disabled = false
-    } else if (isMetaMaskConnected()) {
+    } else if (isStarMaskConnected()) {
       onboardButton.innerText = 'Connected'
       onboardButton.disabled = true
       if (onboarding) {
@@ -132,12 +146,59 @@ const initialize = async () => {
         permissionsResult.innerHTML = `Error: ${err.message}`
       }
     }
+
+    /**
+     * Sending ETH
+     */
+
+    sendButton.onclick = async () => {
+      console.log('sendButton.onclick')
+      const toAccount = document.getElementById('toAccountInput').value
+      console.log({ toAccount })
+      if (!toAccount) {
+        alert('To is empty!')
+        return false
+      }
+      let toAccountAddress = ''
+      let toAccountAuthKey = ''
+      if (toAccount.slice(0, 3) === 'stc') {
+        const receiptIdentifier = encoding.decodeReceiptIdentifier(toAccount)
+        toAccountAddress = receiptIdentifier.accountAddress
+        toAccountAuthKey = receiptIdentifier.authKey
+      } else {
+        toAccountAddress = toAccount
+        let resource
+        // const resource = await starcoinProvider.getResource(toAccountAddress, '0x1::Account::Balance<0x1::STC::STC>')
+        if (!resource) {
+          // eslint-disable-next-line no-alert
+          alert('To\'s address is not exists on this chain, please provide the receiptIdentifier, and try again.')
+          return false
+        }
+      }
+      console.log({ toAccountAddress })
+      console.log({ toAccountAuthKey })
+      const sendAmount = parseInt(document.getElementById('amountInput').value, 10)
+      if (!(sendAmount > 0)) {
+        alert('sendAmount is not a valid number!')
+        return false
+      }
+      const sendAmountString = `${sendAmount.toString()}u128`
+      console.log({ sendAmountString })
+
+      // const result = await ethersProvider.getSigner().sendTransaction({
+      //   to: '0x2f318C334780961FB129D2a6c30D0763d9a5C970',
+      //   value: '0x29a2241af62c0000',
+      //   gasLimit: 21000,
+      //   gasPrice: 20000000000,
+      // })
+      // console.log(result)
+    }
   }
 
   function handleNewAccounts(newAccounts) {
     accounts = newAccounts
     accountsDiv.innerHTML = accounts
-    if (isMetaMaskConnected()) {
+    if (isStarMaskConnected()) {
       initializeAccountButtons()
     }
     updateButtons()
