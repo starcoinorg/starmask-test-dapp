@@ -49,6 +49,9 @@ const initialize = async () => {
   let accountButtonsInitialized = false
 
   const accountButtons = [
+    getAccountsButton,
+    requestPermissionsButton,
+    getPermissionsButton,
     sendButton,
   ]
 
@@ -79,7 +82,9 @@ const initialize = async () => {
       }
       // clearTextDisplays()
     } else {
-      sendButton.disabled = false
+      for (const button of accountButtons) {
+        button.disabled = false
+      }
     }
 
     if (!isStarMaskInstalled()) {
@@ -124,6 +129,7 @@ const initialize = async () => {
 
     requestPermissionsButton.onclick = async () => {
       try {
+        permissionsResult.innerHTML = ''
         const permissionsArray = await window.starcoin.request({
           method: 'wallet_requestPermissions',
           params: [{ stc_accounts: {} }],
@@ -137,6 +143,7 @@ const initialize = async () => {
 
     getPermissionsButton.onclick = async () => {
       try {
+        permissionsResult.innerHTML = ''
         const permissionsArray = await window.starcoin.request({
           method: 'wallet_getPermissions',
         })
@@ -156,7 +163,8 @@ const initialize = async () => {
       const toAccount = document.getElementById('toAccountInput').value
       console.log({ toAccount })
       if (!toAccount) {
-        alert('To is empty!')
+        // eslint-disable-next-line no-alert
+        window.alert('Invalid To: can not be empty!')
         return false
       }
       let toAccountAddress = ''
@@ -171,7 +179,7 @@ const initialize = async () => {
         // const resource = await starcoinProvider.getResource(toAccountAddress, '0x1::Account::Balance<0x1::STC::STC>')
         if (!resource) {
           // eslint-disable-next-line no-alert
-          alert('To\'s address is not exists on this chain, please provide the receiptIdentifier, and try again.')
+          window.alert('To\'s address is not exists on this chain, please provide the receiptIdentifier, and try again.')
           return false
         }
       }
@@ -179,7 +187,8 @@ const initialize = async () => {
       console.log({ toAccountAuthKey })
       const sendAmount = parseInt(document.getElementById('amountInput').value, 10)
       if (!(sendAmount > 0)) {
-        alert('sendAmount is not a valid number!')
+        // eslint-disable-next-line no-alert
+        window.alert('Invalid sendAmount: should be a number!')
         return false
       }
       const sendAmountString = `${sendAmount.toString()}u128`
