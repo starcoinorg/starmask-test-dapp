@@ -1,6 +1,6 @@
+import BigNumber from 'bignumber.js';
 import StarMaskOnboarding from '@starcoin/starmask-onboarding'
 import { providers, utils, encoding, starcoin_types } from '@starcoin/starcoin'
-import { ethers } from 'ethers'
 
 let starcoinProvider
 
@@ -33,7 +33,7 @@ const initialize = async () => {
   console.log('initialize')
   try {
     // We must specify the network as 'any' for starcoin to allow network changes
-    starcoinProvider = new ethers.providers.Web3Provider(window.starcoin, 'any')
+    starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
   } catch (error) {
     console.error(error)
   }
@@ -155,11 +155,12 @@ const initialize = async () => {
     }
 
     /**
-     * Sending ETH
+     * Sending STC
      */
 
     sendButton.onclick = async () => {
       console.log('sendButton.onclick')
+
       const toAccount = document.getElementById('toAccountInput').value
       console.log({ toAccount })
       if (!toAccount) {
@@ -167,40 +168,26 @@ const initialize = async () => {
         window.alert('Invalid To: can not be empty!')
         return false
       }
-      let toAccountAddress = ''
-      let toAccountAuthKey = ''
-      if (toAccount.slice(0, 3) === 'stc') {
-        const receiptIdentifier = encoding.decodeReceiptIdentifier(toAccount)
-        toAccountAddress = receiptIdentifier.accountAddress
-        toAccountAuthKey = receiptIdentifier.authKey
-      } else {
-        toAccountAddress = toAccount
-        let resource
-        // const resource = await starcoinProvider.getResource(toAccountAddress, '0x1::Account::Balance<0x1::STC::STC>')
-        if (!resource) {
-          // eslint-disable-next-line no-alert
-          window.alert('To\'s address is not exists on this chain, please provide the receiptIdentifier, and try again.')
-          return false
-        }
-      }
-      console.log({ toAccountAddress })
-      console.log({ toAccountAuthKey })
-      const sendAmount = parseInt(document.getElementById('amountInput').value, 10)
+
+      const sendAmount = parseFloat(document.getElementById('amountInput').value, 10)
       if (!(sendAmount > 0)) {
         // eslint-disable-next-line no-alert
         window.alert('Invalid sendAmount: should be a number!')
         return false
       }
-      const sendAmountString = `${sendAmount.toString()}u128`
-      console.log({ sendAmountString })
+      const BIG_NUMBER_NANO_STC_MULTIPLIER = new BigNumber('1000000000')
+      const sendAmountSTC = new BigNumber(String(document.getElementById('amountInput').value), 10)
+      const sendAmountNanoSTC = sendAmountSTC.times(BIG_NUMBER_NANO_STC_MULTIPLIER)
+      const sendAmountHex = `0x${sendAmountNanoSTC.toString(16)}`
+      console.log({ sendAmountHex, sendAmountNanoSTC: sendAmountNanoSTC.toString(10) })
 
-      // const result = await ethersProvider.getSigner().sendTransaction({
-      //   to: '0x2f318C334780961FB129D2a6c30D0763d9a5C970',
-      //   value: '0x29a2241af62c0000',
-      //   gasLimit: 21000,
-      //   gasPrice: 20000000000,
-      // })
-      // console.log(result)
+      const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction({
+        to: toAccount,
+        value: sendAmountHex,
+        gasLimit: 127845,
+        gasPrice: 1,
+      })
+      console.log(transactionHash)
     }
   }
 

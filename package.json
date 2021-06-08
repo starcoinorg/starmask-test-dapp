@@ -31,12 +31,12 @@
   },
   "homepage": "https://github.com/starcoinorg/starmask-test-dapp",
   "dependencies": {
-    "bignumber.js": "^4.1.0"
+    "bignumber.js": "^9.0.1"
   },
   "devDependencies": {
     "@metamask/eslint-config": "^4.0.0",
+    "@starcoin/starcoin": "^1.1.0",
     "@starcoin/starmask-onboarding": "^1.0.0",
-    "@starcoin/starcoin": "^1.0.2",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^6.0.2",
     "eslint": "^7.7.0",
