@@ -1,6 +1,7 @@
-import BigNumber from 'bignumber.js';
+import { arrayify, hexlify } from '@ethersproject/bytes'
+import BigNumber from 'bignumber.js'
 import StarMaskOnboarding from '@starcoin/starmask-onboarding'
-import { providers, utils, encoding, starcoin_types } from '@starcoin/starcoin'
+import { providers, utils, bcs, encoding, starcoin_types } from '@starcoin/starcoin'
 
 let starcoinProvider
 
@@ -26,8 +27,12 @@ const requestPermissionsButton = document.getElementById('requestPermissions')
 const getPermissionsButton = document.getElementById('getPermissions')
 const permissionsResult = document.getElementById('permissionsResult')
 
-// Send Eth Section
+// Send STC Section
 const sendButton = document.getElementById('sendButton')
+
+// Contract Section
+const callContractButton = document.getElementById('callContractButton')
+const contractStatus = document.getElementById('contractStatus')
 
 const initialize = async () => {
   console.log('initialize')
@@ -53,6 +58,7 @@ const initialize = async () => {
     requestPermissionsButton,
     getPermissionsButton,
     sendButton,
+    callContractButton,
   ]
 
   const isStarMaskConnected = () => accounts && accounts.length > 0
@@ -162,7 +168,6 @@ const initialize = async () => {
       console.log('sendButton.onclick')
 
       const toAccount = document.getElementById('toAccountInput').value
-      console.log({ toAccount })
       if (!toAccount) {
         // eslint-disable-next-line no-alert
         window.alert('Invalid To: can not be empty!')
@@ -188,6 +193,78 @@ const initialize = async () => {
         gasPrice: 1,
       })
       console.log(transactionHash)
+    }
+
+    /**
+     * Contract Interactions
+     */
+
+    callContractButton.onclick = async () => {
+      contractStatus.innerHTML = 'Calling'
+      callContractButton.disabled = true
+      try {
+        const functionId = '0x1::TransferScripts::peer_to_peer'
+
+        const tyArgs = [{ Struct: { address: '0x1', module: 'STC', name: 'STC', type_params: [] } }]
+
+        const toAccount = document.getElementById('toAccountInput').value
+        if (!toAccount) {
+          // eslint-disable-next-line no-alert
+          window.alert('Invalid To: can not be empty!')
+          return false
+        }
+        console.log({ toAccount })
+
+        const sendAmount = parseFloat(document.getElementById('amountInput').value, 10)
+        if (!(sendAmount > 0)) {
+          // eslint-disable-next-line no-alert
+          window.alert('Invalid sendAmount: should be a number!')
+          return false
+        }
+        const BIG_NUMBER_NANO_STC_MULTIPLIER = new BigNumber('1000000000')
+        const sendAmountSTC = new BigNumber(String(document.getElementById('amountInput').value), 10)
+        const sendAmountNanoSTC = sendAmountSTC.times(BIG_NUMBER_NANO_STC_MULTIPLIER)
+        const sendAmountHex = `0x${sendAmountNanoSTC.toString(16)}`
+        console.log({ sendAmountHex, sendAmountNanoSTC: sendAmountNanoSTC.toString(10) })
+
+        // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
+        const amountSCSHex = (function () {
+          const se = new bcs.BcsSerializer()
+          // eslint-disable-next-line no-undef
+          se.serializeU128(BigInt(sendAmountNanoSTC.toString(10)))
+          return hexlify(se.getBytes())
+        })()
+
+        const args = [
+          arrayify(toAccount),
+          Buffer.from(''),
+          arrayify(amountSCSHex),
+        ]
+
+        const scriptFunction = utils.tx.encodeScriptFunction(functionId, tyArgs, args)
+        console.log(scriptFunction)
+
+        // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
+        const payloadInHex = (function () {
+          const se = new bcs.BcsSerializer()
+          scriptFunction.serialize(se)
+          return hexlify(se.getBytes())
+        })()
+        console.log(payloadInHex)
+        const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction({
+          to: toAccount,
+          data: payloadInHex,
+          gasLimit: 127845,
+          gasPrice: 1,
+        })
+        console.log(transactionHash)
+      } catch (error) {
+        contractStatus.innerHTML = 'Call Failed'
+        callContractButton.disabled = false
+        throw error
+      }
+      contractStatus.innerHTML = 'Call Completed'
+      callContractButton.disabled = false
     }
   }
 
