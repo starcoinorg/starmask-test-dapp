@@ -252,10 +252,7 @@ const initialize = async () => {
         })()
         console.log(payloadInHex)
         const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction({
-          to: toAccount,
           data: payloadInHex,
-          gasLimit: 127845,
-          gasPrice: 1,
         })
         console.log(transactionHash)
       } catch (error) {
