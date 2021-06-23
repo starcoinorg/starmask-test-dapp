@@ -1,7 +1,7 @@
 import { arrayify, hexlify } from '@ethersproject/bytes'
 import BigNumber from 'bignumber.js'
 import StarMaskOnboarding from '@starcoin/starmask-onboarding'
-import { providers, utils, bcs, encoding, starcoin_types } from '@starcoin/starcoin'
+import { providers, utils, bcs, encoding, types, starcoin_types } from '@starcoin/starcoin'
 
 let starcoinProvider
 
@@ -225,7 +225,6 @@ const initialize = async () => {
         const sendAmountSTC = new BigNumber(String(document.getElementById('amountInput').value), 10)
         const sendAmountNanoSTC = sendAmountSTC.times(BIG_NUMBER_NANO_STC_MULTIPLIER)
         const sendAmountHex = `0x${sendAmountNanoSTC.toString(16)}`
-        console.log({ sendAmountHex, sendAmountNanoSTC: sendAmountNanoSTC.toString(10) })
 
         // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
         const amountSCSHex = (function () {
@@ -234,10 +233,12 @@ const initialize = async () => {
           se.serializeU128(BigInt(sendAmountNanoSTC.toString(10)))
           return hexlify(se.getBytes())
         })()
+        console.log({ sendAmountHex, sendAmountNanoSTC: sendAmountNanoSTC.toString(10), amountSCSHex })
+
 
         const args = [
           arrayify(toAccount),
-          Buffer.from(''),
+          Buffer.from('00', 'hex'),
           arrayify(amountSCSHex),
         ]
 
@@ -250,11 +251,16 @@ const initialize = async () => {
           scriptFunction.serialize(se)
           return hexlify(se.getBytes())
         })()
-        console.log(payloadInHex)
+        console.log({ payloadInHex })
+
         const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction({
           data: payloadInHex,
+          // ScriptFunction and Package need to speific gasLimit here.
+          gasLimit: 10000000,
+          gasPrice: 1,
         })
-        console.log(transactionHash)
+        console.log({ transactionHash })
+
       } catch (error) {
         contractStatus.innerHTML = 'Call Failed'
         callContractButton.disabled = false
