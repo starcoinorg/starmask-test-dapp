@@ -253,6 +253,13 @@ const initialize = async () => {
         })()
         console.log({ payloadInHex })
 
+        // const payloadInHex2 = '0x02000000000000000000000000000000010e44616f566f74655363726970747309636173745f766f74650207000000000000000000000000000000010353544303535443000700000000000000000000000000000001104f6e436861696e436f6e66696744616f134f6e436861696e436f6e666967557064617465010700000000000000000000000000000001185472616e73616374696f6e5075626c6973684f7074696f6e185472616e73616374696f6e5075626c6973684f7074696f6e000410b2aa52f94db4516c5beecef363af850a0801000000000000000101100050d6dc010000000000000000000000'
+        // const payloadInHex2 = payloadInHex
+        // const bytes = arrayify(payloadInHex2)
+        // const de = new bcs.BcsDeserializer(bytes)
+        // const payload = starcoin_types.TransactionPayload.deserialize(de)
+        // console.log({ payload })
+
         const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction({
           data: payloadInHex,
           // ScriptFunction and Package need to speific gasLimit here.
