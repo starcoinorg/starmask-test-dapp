@@ -204,6 +204,7 @@ const initialize = async () => {
       callContractButton.disabled = true
       try {
         const functionId = '0x1::TransferScripts::peer_to_peer'
+        const type_args = ['0x1::STC::STC']
 
         const tyArgs = [{ Struct: { address: '0x1', module: 'STC', name: 'STC', type_params: [] } }]
 
@@ -235,7 +236,6 @@ const initialize = async () => {
         })()
         console.log({ sendAmountHex, sendAmountNanoSTC: sendAmountNanoSTC.toString(10), amountSCSHex })
 
-
         const args = [
           arrayify(toAccount),
           Buffer.from('00', 'hex'),
@@ -254,16 +254,49 @@ const initialize = async () => {
         console.log({ payloadInHex })
 
         // const payloadInHex2 = '0x02000000000000000000000000000000010e44616f566f74655363726970747309636173745f766f74650207000000000000000000000000000000010353544303535443000700000000000000000000000000000001104f6e436861696e436f6e66696744616f134f6e436861696e436f6e666967557064617465010700000000000000000000000000000001185472616e73616374696f6e5075626c6973684f7074696f6e185472616e73616374696f6e5075626c6973684f7074696f6e000410b2aa52f94db4516c5beecef363af850a0801000000000000000101100050d6dc010000000000000000000000'
-        // const payloadInHex2 = payloadInHex
+        // // const payloadInHex2 = payloadInHex
         // const bytes = arrayify(payloadInHex2)
         // const de = new bcs.BcsDeserializer(bytes)
         // const payload = starcoin_types.TransactionPayload.deserialize(de)
         // console.log({ payload })
 
+
+        const senderAddressHex = '0x5a2cd40212ad13a1effab6b07cf31f06'
+        const senderPublicKeyHex = '0xeb7cca2a26f952e9308796dff5c0b942d49a02ca09ef9f8975d5bf5f8e546da0'
+        const senderSequenceNumber = await starcoinProvider.getSequenceNumber(senderAddressHex)
+        // console.log({ senderSequenceNumber })
+
+        // 0.01 STC
+        const maxGasAmount = 10000000
+
+        const receiverAddressHex = senderAddressHex
+        const receiverAuthKeyHex = ''
+        const sendAmountString = '1024u128'
+
+        const txnRequest = {
+          chain_id: 1,
+          gas_unit_price: 1,
+          sender: senderAddressHex,
+          sender_public_key: senderPublicKeyHex,
+          sequence_number: senderSequenceNumber,
+          max_gas_amount: maxGasAmount,
+          script: {
+            code: functionId,
+            type_args,
+            args: [receiverAddressHex, `x"${receiverAuthKeyHex}"`, sendAmountString],
+          },
+        }
+        // console.log({ txnRequest })
+        const txnOutput = await starcoinProvider.dryRun(txnRequest)
+        // console.log({ txnOutput })
+        const gasUsed = txnOutput ? txnOutput.gas_used : 0
+        // console.log({ gasUsed })
+        const gasLimit = new BigNumber(gasUsed).times(new BigNumber(1.1)).toFixed(0)
+        // console.log({ gasLimit })
         const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction({
           data: payloadInHex,
-          // ScriptFunction and Package need to speific gasLimit here.
-          gasLimit: 10000000,
+          // ScriptFunction and Package need to estimateGas using dryRun first
+          gasLimit,
           gasPrice: 1,
         })
         console.log({ transactionHash })
