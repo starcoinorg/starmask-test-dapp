@@ -403,10 +403,10 @@
   dependencies:
     mkdirp "^1.0.4"
 
-"@starcoin/starcoin@^1.1.0":
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/@starcoin/starcoin/-/starcoin-1.0.2.tgz#ea716728d833eca0eaa83f621dcd7c83034d4e6e"
-  integrity sha512-nqRIvoBcFQQo46NgxJcAhwJqCEa6psb4OcBoEcZbrCg7Z1NPZypCiO4JrkpL7zGbtfjo/O+kZ3YBlRxhOK+mWA==
+"@starcoin/starcoin@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.npmjs.org/@starcoin/starcoin/-/starcoin-1.3.0.tgz#9f620aa42eb9bed746e03270589d51feb79ae4cb"
+  integrity sha512-rQCVa51ld8iN72C/R4zZNp63311T9uouPdoY4Fkp7PiHlF8JZd5O+JLW7ZFICezGZg/WbKAzf6lOE67Iukw8gQ==
   dependencies:
     "@ethersproject/basex" "^5.0.4"
     "@ethersproject/bignumber" "^5.0"

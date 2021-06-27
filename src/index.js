@@ -1,7 +1,7 @@
 import { arrayify, hexlify } from '@ethersproject/bytes'
 import BigNumber from 'bignumber.js'
 import StarMaskOnboarding from '@starcoin/starmask-onboarding'
-import { providers, utils, bcs, encoding, types, starcoin_types } from '@starcoin/starcoin'
+import { providers, utils, bcs } from '@starcoin/starcoin'
 
 let starcoinProvider
 
@@ -204,10 +204,8 @@ const initialize = async () => {
       callContractButton.disabled = true
       try {
         const functionId = '0x1::TransferScripts::peer_to_peer'
-        const type_args = ['0x1::STC::STC']
-
-        const tyArgs = [{ Struct: { address: '0x1', module: 'STC', name: 'STC', type_params: [] } }]
-
+        const strTypeArgs = ['0x1::STC::STC']
+        const tyArgs = utils.tx.encodeStructTypeTags(strTypeArgs)
         const toAccount = document.getElementById('toAccountInput').value
         if (!toAccount) {
           // eslint-disable-next-line no-alert
@@ -282,7 +280,7 @@ const initialize = async () => {
           max_gas_amount: maxGasAmount,
           script: {
             code: functionId,
-            type_args,
+            strTypeArgs,
             args: [receiverAddressHex, `x"${receiverAuthKeyHex}"`, sendAmountString],
           },
         }
