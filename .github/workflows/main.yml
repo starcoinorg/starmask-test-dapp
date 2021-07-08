@@ -13,18 +13,14 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2.1.2
         with:
-          node-version: '14.x'
+          node-version: '14'
+          cache: 'yarn'
 
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+      - name: Install
+        run: yarn install
 
       - name: Build
-        run: yan build
+        run: yarn build
 
       - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@master
