@@ -5,16 +5,32 @@ on:
     branches: [ main ]
 
 jobs:
-  deploy:
+  build and deploy:
     runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [14.5.1]
+        
     steps:
-    - uses: actions/checkout@main
-    - uses: jeanlescure/react-deploy-to-s3-action@main
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
       with:
-        args: --acl public-read --follow-symlinks --delete
+        node-version: ${{ matrix.node-version }}
+    - name: Yarn Install
+      run: |
+        yarn install
+    - name: Staging Build
+      run: |
+        yarn build
+    - name: Deploy to S3
+      uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --acl public-read --delete
       env:
-        AWS_S3_BUCKET: s3://starmask-test-dapp.starcoin.org
-        AWS_REGION: ap-northeast-1
+        AWS_S3_BUCKET: "s3://starmask-test-dapp.starcoin.org"
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        SOURCE_DIR: dist
+        AWS_REGION: "ap-northeast-1"
+        SOURCE_DIR: "build"
