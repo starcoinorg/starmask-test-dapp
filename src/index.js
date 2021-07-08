@@ -1,5 +1,6 @@
 import { arrayify, hexlify } from '@ethersproject/bytes'
 import BigNumber from 'bignumber.js'
+import { encrypt, recoverPersonalSignature, recoverTypedSignatureLegacy, recoverTypedSignature, recoverTypedSignature_v4 } from '@starcoin/stc-sig-util'
 import StarMaskOnboarding from '@starcoin/starmask-onboarding'
 import { providers, utils, bcs } from '@starcoin/starcoin'
 
@@ -34,6 +35,13 @@ const sendButton = document.getElementById('sendButton')
 const callContractButton = document.getElementById('callContractButton')
 const contractStatus = document.getElementById('contractStatus')
 
+// Signature Section
+const personalSign = document.getElementById('personalSign')
+const personalSignResult = document.getElementById('personalSignResult')
+const personalSignVerify = document.getElementById('personalSignVerify')
+const personalSignVerifySigUtilResult = document.getElementById('personalSignVerifySigUtilResult')
+const personalSignVerifyECRecoverResult = document.getElementById('personalSignVerifyECRecoverResult')
+
 const initialize = async () => {
   console.log('initialize')
   try {
@@ -59,6 +67,8 @@ const initialize = async () => {
     getPermissionsButton,
     sendButton,
     callContractButton,
+    personalSign,
+    personalSignVerify,
   ]
 
   const isStarMaskConnected = () => accounts && accounts.length > 0
@@ -80,17 +90,27 @@ const initialize = async () => {
     }
   }
 
+  const clearTextDisplays = () => {
+    // encryptionKeyDisplay.innerText = ''
+    // encryptMessageInput.value = ''
+    // ciphertextDisplay.innerText = ''
+    // cleartextDisplay.innerText = ''
+  }
+
   const updateButtons = () => {
     const accountButtonsDisabled = !isStarMaskInstalled() || !isStarMaskConnected()
     if (accountButtonsDisabled) {
       for (const button of accountButtons) {
         button.disabled = true
       }
-      // clearTextDisplays()
+      clearTextDisplays()
     } else {
-      for (const button of accountButtons) {
-        button.disabled = false
-      }
+      getAccountsButton.disabled = false
+      requestPermissionsButton.disabled = false
+      getPermissionsButton.disabled = false
+      sendButton.disabled = false
+      callContractButton.disabled = false
+      personalSign.disabled = false
     }
 
     if (!isStarMaskInstalled()) {
@@ -306,6 +326,58 @@ const initialize = async () => {
       }
       contractStatus.innerHTML = 'Call Completed'
       callContractButton.disabled = false
+    }
+
+    /**
+     * Personal Sign
+     */
+    personalSign.onclick = async () => {
+      const exampleMessage = 'Example `personal_sign` message 中文'
+      try {
+        personalSignResult.innerHTML = ''
+        const from = accounts[0]
+        const msg = `0x${Buffer.from(exampleMessage, 'utf8').toString('hex')}`
+        console.log({ msg })
+        const sign = await window.starcoin.request({
+          method: 'personal_sign',
+          // params: [msg, from, 'Example password'],
+          // extraParams = params[2] || {}; means it should be an object:
+          // params: [msg, from, { pwd: 'Example password' }],
+          // actually, extraParams is not used both in the process of signing and verifying. so we can ignore it.
+          params: [msg, from],
+        })
+        personalSignResult.innerHTML = sign
+        personalSignVerify.disabled = false
+      } catch (err) {
+        console.error(err)
+        personalSign.innerHTML = `Error: ${err.message}`
+      }
+    }
+
+    /**
+     * Personal Sign Verify
+     */
+    personalSignVerify.onclick = async () => {
+      const exampleMessage = 'Example `personal_sign` message'
+      try {
+        const from = accounts[0]
+        const msg = `0x${Buffer.from(exampleMessage, 'utf8').toString('hex')}`
+        const sign = personalSignResult.innerHTML
+        const ecRecoverAddr = await window.starcoin.request({
+          method: 'personal_ecRecover',
+          params: [msg, sign],
+        })
+        if (ecRecoverAddr === from) {
+          console.log(`Successfully ecRecovered signer as ${ecRecoverAddr}`)
+          personalSignVerifyECRecoverResult.innerHTML = ecRecoverAddr
+        } else {
+          console.log(`Failed to verify signer when comparing ${ecRecoverAddr} to ${from}`)
+          personalSignVerifyECRecoverResult.innerHTML = `Failed to verify signer when comparing ${ecRecoverAddr} to ${from}`
+        }
+      } catch (err) {
+        console.error(err)
+        personalSignVerifyECRecoverResult.innerHTML = `Error: ${err.message}`
+      }
     }
   }
 
