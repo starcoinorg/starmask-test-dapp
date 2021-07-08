@@ -38,7 +38,6 @@
     "@metamask/eslint-config": "^4.0.0",
     "@starcoin/starcoin": "^1.4.0",
     "@starcoin/starmask-onboarding": "^1.0.0",
-    "@starcoin/stc-sig-util": "^0.1.0",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^6.0.2",
     "eslint": "^7.7.0",

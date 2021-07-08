@@ -1,6 +1,5 @@
 import { arrayify, hexlify } from '@ethersproject/bytes'
 import BigNumber from 'bignumber.js'
-import { encrypt, recoverPersonalSignature, recoverTypedSignatureLegacy, recoverTypedSignature, recoverTypedSignature_v4 } from '@starcoin/stc-sig-util'
 import StarMaskOnboarding from '@starcoin/starmask-onboarding'
 import { providers, utils, bcs } from '@starcoin/starcoin'
 
