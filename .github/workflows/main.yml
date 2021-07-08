@@ -23,9 +23,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - run: npm ci
       - name: Build
-        run: npm run build
+        run: yan build
 
       - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@master
