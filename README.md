@@ -2,7 +2,7 @@
 
 This is a simple test dapp for use in Starmask e2e tests and manual QA.
 
-Currently hosted [here](http://starmask-test-dapp.starcoin.org.s3-website-ap-northeast-1.amazonaws.com/).
+Currently hosted at [https://starmask-test-dapp.starcoin.org](https://starmask-test-dapp.starcoin.org).
 
 ## HTTPS
 
