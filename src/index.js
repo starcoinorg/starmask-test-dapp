@@ -38,8 +38,7 @@ const contractStatus = document.getElementById('contractStatus')
 const personalSign = document.getElementById('personalSign')
 const personalSignResult = document.getElementById('personalSignResult')
 const personalSignVerify = document.getElementById('personalSignVerify')
-const personalSignVerifySigUtilResult = document.getElementById('personalSignVerifySigUtilResult')
-const personalSignVerifyECRecoverResult = document.getElementById('personalSignVerifyECRecoverResult')
+const personalSignRecoverResult = document.getElementById('personalSignRecoverResult')
 
 const initialize = async () => {
   console.log('initialize')
@@ -347,6 +346,7 @@ const initialize = async () => {
         })
         personalSignResult.innerHTML = sign
         personalSignVerify.disabled = false
+        personalSignRecoverResult.innerHTML = ''
       } catch (err) {
         console.error(err)
         personalSign.innerHTML = `Error: ${err.message}`
@@ -357,25 +357,21 @@ const initialize = async () => {
      * Personal Sign Verify
      */
     personalSignVerify.onclick = async () => {
-      const exampleMessage = 'Example `personal_sign` message'
       try {
         const from = accounts[0]
-        const msg = `0x${Buffer.from(exampleMessage, 'utf8').toString('hex')}`
         const sign = personalSignResult.innerHTML
-        const ecRecoverAddr = await window.starcoin.request({
-          method: 'personal_ecRecover',
-          params: [msg, sign],
-        })
-        if (ecRecoverAddr === from) {
-          console.log(`Successfully ecRecovered signer as ${ecRecoverAddr}`)
-          personalSignVerifyECRecoverResult.innerHTML = ecRecoverAddr
+        const recoveredAddr = await utils.signedMessage.recoverSignedMessageAddress(sign)
+        console.log({ recoveredAddr })
+
+        if (recoveredAddr === from) {
+          console.log(`@starcoin/starcoin Successfully verified signer as ${recoveredAddr}`)
+          personalSignRecoverResult.innerHTML = recoveredAddr
         } else {
-          console.log(`Failed to verify signer when comparing ${ecRecoverAddr} to ${from}`)
-          personalSignVerifyECRecoverResult.innerHTML = `Failed to verify signer when comparing ${ecRecoverAddr} to ${from}`
+          console.log('@starcoin/starcoin Failed to verify signer')
         }
       } catch (err) {
         console.error(err)
-        personalSignVerifyECRecoverResult.innerHTML = `Error: ${err.message}`
+        personalSignRecoverResult.innerHTML = `Error: ${err.message}`
       }
     }
   }
@@ -383,6 +379,9 @@ const initialize = async () => {
   function handleNewAccounts(newAccounts) {
     accounts = newAccounts
     accountsDiv.innerHTML = accounts
+    if (getAccountsResults.innerHTML) {
+      getAccountsResults.innerHTML = accounts
+    }
     if (isStarMaskConnected()) {
       initializeAccountButtons()
     }
