@@ -333,6 +333,8 @@ const initialize = async () => {
       const exampleMessage = 'Example `personal_sign` message 中文'
       try {
         personalSignResult.innerHTML = ''
+        personalSignVerify.disabled = false
+        personalSignRecoverResult.innerHTML = ''
         const from = accounts[0]
         const msg = `0x${Buffer.from(exampleMessage, 'utf8').toString('hex')}`
         console.log({ msg })
@@ -345,8 +347,6 @@ const initialize = async () => {
           params: [msg, from],
         })
         personalSignResult.innerHTML = sign
-        personalSignVerify.disabled = false
-        personalSignRecoverResult.innerHTML = ''
       } catch (err) {
         console.error(err)
         personalSign.innerHTML = `Error: ${err.message}`
