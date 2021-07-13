@@ -1,7 +1,8 @@
 import { arrayify, hexlify } from '@ethersproject/bytes'
+import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util'
 import BigNumber from 'bignumber.js'
 import StarMaskOnboarding from '@starcoin/starmask-onboarding'
-import { providers, utils, bcs } from '@starcoin/starcoin'
+import { providers, utils, bcs, encoding } from '@starcoin/starcoin'
 
 let starcoinProvider
 
@@ -29,8 +30,11 @@ const permissionsResult = document.getElementById('permissionsResult')
 
 // Send STC Section
 const sendButton = document.getElementById('sendButton')
+const contractStatus2 = document.getElementById('contractStatus2')
 
 // Contract Section
+const deployButton = document.getElementById('deployButton')
+const tokenAddressButton = document.getElementById('tokenAddressButton')
 const callContractButton = document.getElementById('callContractButton')
 const contractStatus = document.getElementById('contractStatus')
 
@@ -65,6 +69,8 @@ const initialize = async () => {
     getPermissionsButton,
     sendButton,
     callContractButton,
+    deployButton,
+    tokenAddressButton,
     personalSign,
     personalSignVerify,
   ]
@@ -108,6 +114,7 @@ const initialize = async () => {
       getPermissionsButton.disabled = false
       sendButton.disabled = false
       callContractButton.disabled = false
+      deployButton.disabled = false
       personalSign.disabled = false
     }
 
@@ -213,12 +220,8 @@ const initialize = async () => {
       console.log(transactionHash)
     }
 
-    /**
-     * Contract Interactions
-     */
-
     callContractButton.onclick = async () => {
-      contractStatus.innerHTML = 'Calling'
+      contractStatus2.innerHTML = 'Calling'
       callContractButton.disabled = true
       try {
         const functionId = '0x1::TransferScripts::peer_to_peer'
@@ -277,8 +280,8 @@ const initialize = async () => {
         // console.log({ payload })
 
 
-        const senderAddressHex = '0x5a2cd40212ad13a1effab6b07cf31f06'
-        const senderPublicKeyHex = '0xeb7cca2a26f952e9308796dff5c0b942d49a02ca09ef9f8975d5bf5f8e546da0'
+        const senderAddressHex = '0x3f19d5422824f47e6c021978cee98f35'
+        const senderPublicKeyHex = '0x9e337a5b8e530483377cbf87668194894a130xc51dada886afe59d4651f36b56f3c4a1a84da53dfbddf396d81a5b36ab5cdc2662031c5bd5b5739d1493c3c16120'
         const senderSequenceNumber = await starcoinProvider.getSequenceNumber(senderAddressHex)
         // console.log({ senderSequenceNumber })
 
@@ -290,7 +293,7 @@ const initialize = async () => {
         const sendAmountString = '1024u128'
 
         const txnRequest = {
-          chain_id: 1,
+          chain_id: parseInt(networkDiv.innerHTML, 10),
           gas_unit_price: 1,
           sender: senderAddressHex,
           sender_public_key: senderPublicKeyHex,
@@ -318,12 +321,61 @@ const initialize = async () => {
         console.log({ transactionHash })
 
       } catch (error) {
-        contractStatus.innerHTML = 'Call Failed'
+        contractStatus2.innerHTML = 'Call Failed'
         callContractButton.disabled = false
         throw error
       }
-      contractStatus.innerHTML = 'Call Completed'
+      contractStatus2.innerHTML = 'Call Completed'
       callContractButton.disabled = false
+    }
+
+    /**
+     * Contract Interactions
+     */
+
+    deployButton.onclick = async () => {
+      let transactionHash
+      contractStatus.innerHTML = 'Deploying'
+
+      try {
+        // contract = await piggybankFactory.deploy()
+        // await contract.deployTransaction.wait()
+        const packageHex = '024f69ff412b2c1bb1dd394d79554f3002ab02a11ceb0b0200000009010006020609030f2204310805392807615708b801200ad801050cdd0126000001010102000007000202040100000300010000040201000206040101040107050101040204070801040108090101040203030304030503010c00020c0401080002060c0201060c010b0101080002060c04010b0101090002060c0b0101090003506464074163636f756e7405546f6b656e04696e6974046d696e740b64756d6d795f6669656c640e72656769737465725f746f6b656e0f646f5f6163636570745f746f6b656e0f6465706f7369745f746f5f73656c66024f69ff412b2c1bb1dd394d79554f300000000000000000000000000000000100020105010002000001060e00310338000e003801020102000006080e000a0138020c020e000b02380302008d03a11ceb0b020000000a010006020609030f3a04490c0555310786017a0880022006a002030aa302050ca80238000001010102000007000202040100000300010000040102010400050301000006010400020806010104010907010104020a010202040402050a0b0104010b0c010104020601040104040505050608070508050905010c000101020c04010501080002060c0201060c0208000900010b0101080002060c04010b0101090002060c0b0101090003414243074163636f756e7405546f6b656e04696e69740669735f616263046d696e740d746f6b656e5f616464726573730b64756d6d795f6669656c640e72656769737465725f746f6b656e0f646f5f6163636570745f746f6b656e0d69735f73616d655f746f6b656e0f6465706f7369745f746f5f73656c66024f69ff412b2c1bb1dd394d79554f300000000000000000000000000000000102011200020107010002000001060e00070038000e003801020101000001023802020202000009080e000a0138030c020e000b023804020301000001023805020000'
+        const transactionPayloadHex = encoding.packageHexToTransactionPayloadHex(packageHex)
+        // const txnOutput = await starcoinProvider.dryRun(txnRequest)
+        // console.log({ txnOutput })
+        // const gasUsed = txnOutput ? txnOutput.gas_used : 0
+        // console.log({ gasUsed })
+        // const gasLimit = new BigNumber(gasUsed).times(new BigNumber(1.1)).toFixed(0)
+        const gasLimit = 10000000
+        // console.log({ gasLimit })
+        transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction({
+          data: transactionPayloadHex,
+          // ScriptFunction and Package need to estimateGas using dryRun first
+          gasLimit,
+          gasPrice: 1,
+        })
+        console.log({ transactionHash })
+
+      } catch (error) {
+        contractStatus.innerHTML = 'Deployment Failed'
+        throw error
+      }
+
+      console.log(`Contract deployed! address: ${accountsDiv.innerHTML} transactionHash: ${transactionHash}`)
+      contractStatus.innerHTML = 'Deployed'
+      tokenAddressButton.disabled = false
+
+      tokenAddressButton.onclick = async () => {
+        contractStatus.innerHTML = 'Deposit initiated'
+        // const result = await contract.deposit({
+        //   from: accounts[0],
+        //   value: '0x3782dace9d900000',
+        // })
+        // console.log(result)
+        contractStatus.innerHTML = 'Deposit completed'
+      }
+      // console.log(contract)
     }
 
     /**
