@@ -338,15 +338,8 @@ const initialize = async () => {
       contractStatus.innerHTML = 'Deploying'
 
       try {
-        // contract = await piggybankFactory.deploy()
-        // await contract.deployTransaction.wait()
         const packageHex = '024f69ff412b2c1bb1dd394d79554f3002ab02a11ceb0b0200000009010006020609030f2204310805392807615708b801200ad801050cdd0126000001010102000007000202040100000300010000040201000206040101040107050101040204070801040108090101040203030304030503010c00020c0401080002060c0201060c010b0101080002060c04010b0101090002060c0b0101090003506464074163636f756e7405546f6b656e04696e6974046d696e740b64756d6d795f6669656c640e72656769737465725f746f6b656e0f646f5f6163636570745f746f6b656e0f6465706f7369745f746f5f73656c66024f69ff412b2c1bb1dd394d79554f300000000000000000000000000000000100020105010002000001060e00310338000e003801020102000006080e000a0138020c020e000b02380302008d03a11ceb0b020000000a010006020609030f3a04490c0555310786017a0880022006a002030aa302050ca80238000001010102000007000202040100000300010000040102010400050301000006010400020806010104010907010104020a010202040402050a0b0104010b0c010104020601040104040505050608070508050905010c000101020c04010501080002060c0201060c0208000900010b0101080002060c04010b0101090002060c0b0101090003414243074163636f756e7405546f6b656e04696e69740669735f616263046d696e740d746f6b656e5f616464726573730b64756d6d795f6669656c640e72656769737465725f746f6b656e0f646f5f6163636570745f746f6b656e0d69735f73616d655f746f6b656e0f6465706f7369745f746f5f73656c66024f69ff412b2c1bb1dd394d79554f300000000000000000000000000000000102011200020107010002000001060e00070038000e003801020101000001023802020202000009080e000a0138030c020e000b023804020301000001023805020000'
         const transactionPayloadHex = encoding.packageHexToTransactionPayloadHex(packageHex)
-        // const txnOutput = await starcoinProvider.dryRun(txnRequest)
-        // console.log({ txnOutput })
-        // const gasUsed = txnOutput ? txnOutput.gas_used : 0
-        // console.log({ gasUsed })
-        // const gasLimit = new BigNumber(gasUsed).times(new BigNumber(1.1)).toFixed(0)
         const gasLimit = 10000000
         // console.log({ gasLimit })
         transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction({
@@ -356,7 +349,6 @@ const initialize = async () => {
           gasPrice: 1,
         })
         console.log({ transactionHash })
-
       } catch (error) {
         contractStatus.innerHTML = 'Deployment Failed'
         throw error
@@ -365,17 +357,22 @@ const initialize = async () => {
       console.log(`Contract deployed! address: ${accountsDiv.innerHTML} transactionHash: ${transactionHash}`)
       contractStatus.innerHTML = 'Deployed'
       tokenAddressButton.disabled = false
-
-      tokenAddressButton.onclick = async () => {
-        contractStatus.innerHTML = 'Deposit initiated'
-        // const result = await contract.deposit({
-        //   from: accounts[0],
-        //   value: '0x3782dace9d900000',
-        // })
-        // console.log(result)
-        contractStatus.innerHTML = 'Deposit completed'
-      }
       // console.log(contract)
+    }
+
+    tokenAddressButton.onclick = async () => {
+      contractStatus.innerHTML = 'contract method request started'
+      try {
+        const result = await starcoinProvider.call({
+          function_id: `${accounts[0]}::ABC::token_address`,
+          type_args: [],
+          args: [],
+        })
+        contractStatus.innerHTML = result[0]
+      } catch (error) {
+        console.log(error)
+        throw error
+      }
     }
 
     /**
@@ -390,13 +387,14 @@ const initialize = async () => {
         const from = accounts[0]
         const msg = `0x${Buffer.from(exampleMessage, 'utf8').toString('hex')}`
         console.log({ msg })
+        const networkId = networkDiv.innerHTML
+        const extraParams = { networkId }
         const sign = await window.starcoin.request({
           method: 'personal_sign',
           // params: [msg, from, 'Example password'],
           // extraParams = params[2] || {}; means it should be an object:
           // params: [msg, from, { pwd: 'Example password' }],
-          // actually, extraParams is not used both in the process of signing and verifying. so we can ignore it.
-          params: [msg, from],
+          params: [msg, from, extraParams],
         })
         personalSignResult.innerHTML = sign
       } catch (err) {
