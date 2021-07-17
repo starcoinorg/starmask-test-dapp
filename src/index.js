@@ -30,12 +30,12 @@ const permissionsResult = document.getElementById('permissionsResult')
 
 // Send STC Section
 const sendButton = document.getElementById('sendButton')
+const callContractButton = document.getElementById('callContractButton')
 const contractStatus2 = document.getElementById('contractStatus2')
 
 // Contract Section
 const deployButton = document.getElementById('deployButton')
 const tokenAddressButton = document.getElementById('tokenAddressButton')
-const callContractButton = document.getElementById('callContractButton')
 const contractStatus = document.getElementById('contractStatus')
 
 // Signature Section
@@ -272,51 +272,8 @@ const initialize = async () => {
         })()
         console.log({ payloadInHex })
 
-        // const payloadInHex2 = '0x02000000000000000000000000000000010e44616f566f74655363726970747309636173745f766f74650207000000000000000000000000000000010353544303535443000700000000000000000000000000000001104f6e436861696e436f6e66696744616f134f6e436861696e436f6e666967557064617465010700000000000000000000000000000001185472616e73616374696f6e5075626c6973684f7074696f6e185472616e73616374696f6e5075626c6973684f7074696f6e000410b2aa52f94db4516c5beecef363af850a0801000000000000000101100050d6dc010000000000000000000000'
-        // // const payloadInHex2 = payloadInHex
-        // const bytes = arrayify(payloadInHex2)
-        // const de = new bcs.BcsDeserializer(bytes)
-        // const payload = starcoin_types.TransactionPayload.deserialize(de)
-        // console.log({ payload })
-
-
-        const senderAddressHex = '0x3f19d5422824f47e6c021978cee98f35'
-        const senderPublicKeyHex = '0x9e337a5b8e530483377cbf87668194894a130xc51dada886afe59d4651f36b56f3c4a1a84da53dfbddf396d81a5b36ab5cdc2662031c5bd5b5739d1493c3c16120'
-        const senderSequenceNumber = await starcoinProvider.getSequenceNumber(senderAddressHex)
-        // console.log({ senderSequenceNumber })
-
-        // 0.01 STC
-        const maxGasAmount = 10000000
-
-        const receiverAddressHex = senderAddressHex
-        const receiverAuthKeyHex = ''
-        const sendAmountString = '1024u128'
-
-        const txnRequest = {
-          chain_id: parseInt(networkDiv.innerHTML, 10),
-          gas_unit_price: 1,
-          sender: senderAddressHex,
-          sender_public_key: senderPublicKeyHex,
-          sequence_number: senderSequenceNumber,
-          max_gas_amount: maxGasAmount,
-          script: {
-            code: functionId,
-            strTypeArgs,
-            args: [receiverAddressHex, `x"${receiverAuthKeyHex}"`, sendAmountString],
-          },
-        }
-        // console.log({ txnRequest })
-        const txnOutput = await starcoinProvider.dryRun(txnRequest)
-        // console.log({ txnOutput })
-        const gasUsed = txnOutput ? txnOutput.gas_used : 0
-        // console.log({ gasUsed })
-        const gasLimit = new BigNumber(gasUsed).times(new BigNumber(1.1)).toFixed(0)
-        // console.log({ gasLimit })
         const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction({
           data: payloadInHex,
-          // ScriptFunction and Package need to estimateGas using dryRun first
-          gasLimit,
-          gasPrice: 1,
         })
         console.log({ transactionHash })
 
@@ -338,15 +295,10 @@ const initialize = async () => {
       contractStatus.innerHTML = 'Deploying'
 
       try {
-        const packageHex = '024f69ff412b2c1bb1dd394d79554f3002ab02a11ceb0b0200000009010006020609030f2204310805392807615708b801200ad801050cdd0126000001010102000007000202040100000300010000040201000206040101040107050101040204070801040108090101040203030304030503010c00020c0401080002060c0201060c010b0101080002060c04010b0101090002060c0b0101090003506464074163636f756e7405546f6b656e04696e6974046d696e740b64756d6d795f6669656c640e72656769737465725f746f6b656e0f646f5f6163636570745f746f6b656e0f6465706f7369745f746f5f73656c66024f69ff412b2c1bb1dd394d79554f300000000000000000000000000000000100020105010002000001060e00310338000e003801020102000006080e000a0138020c020e000b02380302008d03a11ceb0b020000000a010006020609030f3a04490c0555310786017a0880022006a002030aa302050ca80238000001010102000007000202040100000300010000040102010400050301000006010400020806010104010907010104020a010202040402050a0b0104010b0c010104020601040104040505050608070508050905010c000101020c04010501080002060c0201060c0208000900010b0101080002060c04010b0101090002060c0b0101090003414243074163636f756e7405546f6b656e04696e69740669735f616263046d696e740d746f6b656e5f616464726573730b64756d6d795f6669656c640e72656769737465725f746f6b656e0f646f5f6163636570745f746f6b656e0d69735f73616d655f746f6b656e0f6465706f7369745f746f5f73656c66024f69ff412b2c1bb1dd394d79554f300000000000000000000000000000000102011200020107010002000001060e00070038000e003801020101000001023802020202000009080e000a0138030c020e000b023804020301000001023805020000'
+        const packageHex = '7f1ae49d8a574cb95b491d7ab7d5be6d02ab02a11ceb0b0200000009010006020609030f2204310805392807615708b801200ad801050cdd0126000001010102000007000202040100000300010000040201000206040101040107050101040204070801040108090101040203030304030503010c00020c0401080002060c0201060c010b0101080002060c04010b0101090002060c0b0101090003506464074163636f756e7405546f6b656e04696e6974046d696e740b64756d6d795f6669656c640e72656769737465725f746f6b656e0f646f5f6163636570745f746f6b656e0f6465706f7369745f746f5f73656c667f1ae49d8a574cb95b491d7ab7d5be6d0000000000000000000000000000000100020105010002000001060e00310338000e003801020102000006080e000a0138020c020e000b02380302008d03a11ceb0b020000000a010006020609030f3a04490c0555310786017a0880022006a002030aa302050ca80238000001010102000007000202040100000300010000040102010400050301000006010400020806010104010907010104020a010202040402050a0b0104010b0c010104020601040104040505050608070508050905010c000101020c04010501080002060c0201060c0208000900010b0101080002060c04010b0101090002060c0b0101090003414243074163636f756e7405546f6b656e04696e69740669735f616263046d696e740d746f6b656e5f616464726573730b64756d6d795f6669656c640e72656769737465725f746f6b656e0f646f5f6163636570745f746f6b656e0d69735f73616d655f746f6b656e0f6465706f7369745f746f5f73656c667f1ae49d8a574cb95b491d7ab7d5be6d0000000000000000000000000000000102011200020107010002000001060e00070038000e003801020101000001023802020202000009080e000a0138030c020e000b023804020301000001023805020000'
         const transactionPayloadHex = encoding.packageHexToTransactionPayloadHex(packageHex)
-        const gasLimit = 10000000
-        // console.log({ gasLimit })
         transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction({
           data: transactionPayloadHex,
-          // ScriptFunction and Package need to estimateGas using dryRun first
-          gasLimit,
-          gasPrice: 1,
         })
         console.log({ transactionHash })
       } catch (error) {
@@ -354,7 +306,7 @@ const initialize = async () => {
         throw error
       }
 
-      console.log(`Contract deployed! address: ${accountsDiv.innerHTML} transactionHash: ${transactionHash}`)
+      console.log(`Contract deployed! address: ${accounts[0]} transactionHash: ${transactionHash}`)
       contractStatus.innerHTML = 'Deployed'
       tokenAddressButton.disabled = false
       // console.log(contract)
