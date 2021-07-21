@@ -1,5 +1,4 @@
 import { arrayify, hexlify } from '@ethersproject/bytes'
-import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util'
 import BigNumber from 'bignumber.js'
 import StarMaskOnboarding from '@starcoin/starmask-onboarding'
 import { providers, utils, bcs, encoding } from '@starcoin/starcoin'
@@ -49,8 +48,10 @@ const personalSignRecoverResult = document.getElementById('personalSignRecoverRe
 const initialize = async () => {
   console.log('initialize')
   try {
-    // We must specify the network as 'any' for starcoin to allow network changes
-    starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
+    if (window.starcoin) {
+      // We must specify the network as 'any' for starcoin to allow network changes
+      starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
+    }
   } catch (error) {
     console.error(error)
   }
