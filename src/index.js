@@ -228,7 +228,7 @@ const initialize = async () => {
       contractStatus2.innerHTML = 'Calling'
       callContractButton.disabled = true
       try {
-        const functionId = '0x1::TransferScripts::peer_to_peer'
+        const functionId = '0x1::TransferScripts::peer_to_peer_v2'
         const strTypeArgs = ['0x1::STC::STC']
         const tyArgs = utils.tx.encodeStructTypeTags(strTypeArgs)
         const toAccount = document.getElementById('toAccountInput').value
@@ -261,7 +261,6 @@ const initialize = async () => {
 
         const args = [
           arrayify(toAccount),
-          Buffer.from('00', 'hex'),
           arrayify(amountSCSHex),
         ]
 
