@@ -215,12 +215,21 @@ const initialize = async () => {
       const sendAmountHex = `0x${sendAmountNanoSTC.toString(16)}`
       console.log({ sendAmountHex, sendAmountNanoSTC: sendAmountNanoSTC.toString(10) })
 
-      const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction({
+      const txParams = {
         to: toAccount,
         value: sendAmountHex,
         gasLimit: 127845,
         gasPrice: 1,
-      })
+      }
+
+      const expiredSecs = parseInt(document.getElementById('expiredSecsInput').value, 10)
+      console.log({ expiredSecs })
+      if (expiredSecs > 0) {
+        txParams.expiredSecs = expiredSecs
+      }
+
+      console.log({ txParams })
+      const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
       console.log(transactionHash)
     }
 
@@ -231,6 +240,7 @@ const initialize = async () => {
         const functionId = '0x1::TransferScripts::peer_to_peer_v2'
         const strTypeArgs = ['0x1::STC::STC']
         const tyArgs = utils.tx.encodeStructTypeTags(strTypeArgs)
+
         const toAccount = document.getElementById('toAccountInput').value
         if (!toAccount) {
           // eslint-disable-next-line no-alert
@@ -275,11 +285,19 @@ const initialize = async () => {
         })()
         console.log({ payloadInHex })
 
-        const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction({
+        const txParams = {
           data: payloadInHex,
-        })
-        console.log({ transactionHash })
+        }
 
+        const expiredSecs = parseInt(document.getElementById('expiredSecsInput').value, 10)
+        console.log({ expiredSecs })
+        if (expiredSecs > 0) {
+          txParams.expiredSecs = expiredSecs
+        }
+
+        console.log({ txParams })
+        const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
+        console.log({ transactionHash })
       } catch (error) {
         contractStatus2.innerHTML = 'Call Failed'
         callContractButton.disabled = false
