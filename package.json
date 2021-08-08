@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@metamask/eslint-config": "^4.0.0",
-    "@starcoin/starcoin": "^1.4.4",
+    "@starcoin/starcoin": "^1.4.5",
     "@starcoin/starmask-onboarding": "^1.0.0",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^6.0.2",
