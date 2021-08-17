@@ -44,6 +44,10 @@ const personalSignResult = document.getElementById('personalSignResult')
 const personalSignVerify = document.getElementById('personalSignVerify')
 const personalSignRecoverResult = document.getElementById('personalSignRecoverResult')
 
+// Airdrop Section
+const claimAirdrop = document.getElementById('claimAirdrop')
+const claimAirdropResult = document.getElementById('claimAirdropResult')
+
 const initialize = async () => {
   console.log('initialize')
   try {
@@ -77,6 +81,7 @@ const initialize = async () => {
     tokenAddressButton,
     personalSign,
     personalSignVerify,
+    claimAirdrop,
   ]
 
   const isStarMaskConnected = () => accounts && accounts.length > 0
@@ -120,6 +125,7 @@ const initialize = async () => {
       callContractButton.disabled = false
       deployButton.disabled = false
       personalSign.disabled = false
+      claimAirdrop.disabled = false
     }
 
     if (!isStarMaskInstalled()) {
@@ -396,6 +402,96 @@ const initialize = async () => {
         console.error(err)
         personalSignRecoverResult.innerHTML = `Error: ${err.message}`
       }
+    }
+
+    /**
+     * Claim Airdrop
+     */
+    claimAirdrop.onclick = async () => {
+      console.log('claimAirdrop.onclick')
+
+      claimAirdropResult.innerHTML = 'Calling'
+      claimAirdrop.disabled = true
+      try {
+
+        const air_drop_id = 1629111755864
+        const owner_address = '0xf8af03dd08de49d81e4efd9e24c039cc'
+        const root = '0x9942cacc71d92103df4831aebdaa3b66d8eb3dfaa291ec2bf59b4c3e902f5e39'
+
+        const proofs = [
+          {
+            "address": "0x3f19d5422824f47E6C021978CeE98f35",
+            "index": 0,
+            "amount": 2000000000,
+            "proof": [
+              "0xf4bb4b120cea39dd8b7c373c356aecb6b3ae2de2a372ec4b7a393a803cf6380e"
+            ]
+          },
+          {
+            "address": "0xD7f20bEFd34B9f1ab8aeae98b82a5A51",
+            "index": 1,
+            "amount": 2000000000,
+            "proof": [
+              "0x619dbde59292fd9e0f845059a12aa8aef367ac3efe560f31b059711d7f0c5a07"
+            ]
+          },
+        ]
+
+        console.log(proofs)
+        console.log(accountsDiv.innerHTML.toLowerCase())
+        const resluts = proofs.filter((proof) => proof.address.toLowerCase() === accountsDiv.innerHTML.toLowerCase());
+        console.log({ resluts })
+        if (resluts[0]) {
+          const record = resluts[0]
+
+          const functionId = '0xf8af03dd08de49d81e4efd9e24c039cc::MerkleDistributorScript::claim_script'
+          const tyArgs = ['0x1::STC::STC']
+          const args = [owner_address, air_drop_id, root, record.index, record.amount, record.proof]
+
+          console.log(args)
+
+          const nodeUrlMap = {
+            '1': 'https://main-seed.starcoin.org',
+            '2': 'https://proxima-seed.starcoin.org',
+            '251': 'https://barnard-seed.starcoin.org',
+            '253': 'https://halley-seed.starcoin.org',
+            '254': 'http://localhost:9850',
+          }
+          const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
+          console.log(window.starcoin.chainId, nodeUrl)
+
+          const scriptFunction = await utils.tx.encodeScriptFunctionByResolve(functionId, tyArgs, args, nodeUrl)
+          console.log(scriptFunction)
+
+          // // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
+          const payloadInHex = (function () {
+            const se = new bcs.BcsSerializer()
+            scriptFunction.serialize(se)
+            return hexlify(se.getBytes())
+          })()
+          console.log({ payloadInHex })
+
+          const txParams = {
+            data: payloadInHex,
+          }
+
+          const expiredSecs = parseInt(document.getElementById('expiredSecsInput').value, 10)
+          console.log({ expiredSecs })
+          if (expiredSecs > 0) {
+            txParams.expiredSecs = expiredSecs
+          }
+
+          console.log({ txParams })
+          const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
+          console.log({ transactionHash })
+        }
+      } catch (error) {
+        contractStatus2.innerHTML = 'Call Failed'
+        callContractButton.disabled = false
+        throw error
+      }
+      contractStatus2.innerHTML = 'Call Completed'
+      callContractButton.disabled = false
     }
   }
 
