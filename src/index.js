@@ -444,14 +444,20 @@ const initialize = async () => {
           const record = filterResluts[0]
 
           const functionIdMap = {
-            '1': '0x::MerkleDistributorScript::claim_script',
-            '2': '0x::MerkleDistributorScript::claim_script',
-            '251': '0xf8af03dd08de49d81e4efd9e24c039cc::MerkleDistributorScript::claim_script',
-            '253': '0x7bEB045F2Dea2F7Fe50eDe88C3e19A72::MerkleDistributorScript::claim_script',
-            '254': '',
+            '1': '', // main
+            '2': '', // proxima
+            '251': '0xf8af03dd08de49d81e4efd9e24c039cc::MerkleDistributorScript::claim_script', // barnard
+            '253': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // halley
+            '254': '', // localhost
           }
 
           const functionId = functionIdMap[window.starcoin.networkVersion]
+          if (!functionId) {
+            window.alert('airdrop contract is not deployed on this network!')
+            claimAirdropResult.innerHTML = 'Call Failed'
+            claimAirdrop.disabled = false
+            return false;
+          }
           const tyArgs = ['0x1::STC::STC']
           const args = [record.ownerAddress, record.airDropId, record.root, record.idx, record.amount, record.proof]
 
@@ -493,12 +499,12 @@ const initialize = async () => {
           console.log({ transactionHash })
         }
       } catch (error) {
-        contractStatus2.innerHTML = 'Call Failed'
-        callContractButton.disabled = false
+        claimAirdropResult.innerHTML = 'Call Failed'
+        claimAirdrop.disabled = false
         throw error
       }
-      contractStatus2.innerHTML = 'Call Completed'
-      callContractButton.disabled = false
+      claimAirdropResult.innerHTML = 'Call Completed'
+      claimAirdrop.disabled = false
     }
   }
 
