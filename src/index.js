@@ -46,7 +46,49 @@ const personalSignRecoverResult = document.getElementById('personalSignRecoverRe
 
 // Airdrop Section
 const claimAirdrop = document.getElementById('claimAirdrop')
+const checkClaimedAirdrop = document.getElementById('checkClaimedAirdrop')
 const claimAirdropResult = document.getElementById('claimAirdropResult')
+
+const airdropRecords = [
+  {
+    airDropId: 1629220858501,
+    ownerAddress: '0x3f19d5422824f47e6c021978cee98f35',
+    root: '0xaacff971f163f956a24068dc5f50e03313e374a1725a8806ff275441f9aa6109',
+    address: '0x3f19d5422824f47e6c021978cee98f35',
+    idx: 0,
+    amount: 1000000000,
+    proof: [
+      '0xac47a36f0bc7f19afd2baba9c8182e7e8d6dbe2a3eff03f9519fd4b50e6f1960'
+    ]
+  },
+  {
+    airDropId: 1629220858501,
+    ownerAddress: '0x3f19d5422824f47e6c021978cee98f35',
+    root: '0xaacff971f163f956a24068dc5f50e03313e374a1725a8806ff275441f9aa6109',
+    address: '0xd7f20befd34b9f1ab8aeae98b82a5a51',
+    idx: 1,
+    amount: 1000000000,
+    proof: [
+      '0xa9851fbee8dc895269b4a503d141460d6e6b07919d8cf37d0225d06caa8bc5fd'
+    ]
+  }
+]
+
+const airdropModuleMap = {
+  '1': '', // main
+  '2': '', // proxima
+  '251': '0xf8af03dd08de49d81e4efd9e24c039cc::MerkleDistributorScript', // barnard
+  '253': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript', // halley
+  '254': '', // localhost
+}
+
+const nodeUrlMap = {
+  '1': 'https://main-seed.starcoin.org',
+  '2': 'https://proxima-seed.starcoin.org',
+  '251': 'https://barnard-seed.starcoin.org',
+  '253': 'https://halley-seed.starcoin.org',
+  '254': 'http://localhost:9850',
+}
 
 const initialize = async () => {
   console.log('initialize')
@@ -82,6 +124,7 @@ const initialize = async () => {
     personalSign,
     personalSignVerify,
     claimAirdrop,
+    checkClaimedAirdrop,
   ]
 
   const isStarMaskConnected = () => accounts && accounts.length > 0
@@ -126,6 +169,7 @@ const initialize = async () => {
       deployButton.disabled = false
       personalSign.disabled = false
       claimAirdrop.disabled = false
+      checkClaimedAirdrop.disabled = false
     }
 
     if (!isStarMaskInstalled()) {
@@ -408,73 +452,28 @@ const initialize = async () => {
      * Claim Airdrop
      */
     claimAirdrop.onclick = async () => {
-      console.log('claimAirdrop.onclick')
-
       claimAirdropResult.innerHTML = 'Calling'
       claimAirdrop.disabled = true
       try {
-        const records = [
-          {
-            airDropId: 1629183961184,
-            ownerAddress: '0x3f19d5422824f47e6c021978cee98f35',
-            root: '0x95897dd6c2fb94d0543dc745471c12910eff0e9b886686c79e251038cb1b4d02',
-            address: '0x3f19d5422824f47e6c021978cee98f35',
-            idx: 0,
-            amount: 1000000000,
-            proof: [
-              '0x8e942cfc78768a015a18657d8da260ce16744136cea62a9dd17159a9f0dc5110'
-            ],
-          },
-          {
-            airDropId: 1629183961184,
-            ownerAddress: '0x3f19d5422824f47e6c021978cee98f35',
-            root: '0x95897dd6c2fb94d0543dc745471c12910eff0e9b886686c79e251038cb1b4d02',
-            address: '0xd7f20befd34b9f1ab8aeae98b82a5a51',
-            idx: 1,
-            amount: 1000000000,
-            proof: [
-              '0xd2f61a7313c5d178714c3dfdff3eb76737886611fa583764efd52f905ae6dda2'
-            ],
-          },
-        ]
-
-        const filterResluts = records.filter((record) => record.address.toLowerCase() === accountsDiv.innerHTML.toLowerCase());
-        console.log({ filterResluts })
+        const filterResluts = airdropRecords.filter((record) => record.address.toLowerCase() === accountsDiv.innerHTML.toLowerCase());
         if (filterResluts[0]) {
           const record = filterResluts[0]
 
-          const functionIdMap = {
-            '1': '', // main
-            '2': '', // proxima
-            '251': '0xf8af03dd08de49d81e4efd9e24c039cc::MerkleDistributorScript::claim_script', // barnard
-            '253': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // halley
-            '254': '', // localhost
-          }
-
-          const functionId = functionIdMap[window.starcoin.networkVersion]
-          if (!functionId) {
+          const module = airdropModuleMap[window.starcoin.networkVersion]
+          if (!module) {
             window.alert('airdrop contract is not deployed on this network!')
             claimAirdropResult.innerHTML = 'Call Failed'
             claimAirdrop.disabled = false
             return false;
           }
-          const tyArgs = ['0x1::STC::STC']
+          const functionId = `${module}::claim_script`
+          const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
           const args = [record.ownerAddress, record.airDropId, record.root, record.idx, record.amount, record.proof]
 
-          console.log(args)
-
-          const nodeUrlMap = {
-            '1': 'https://main-seed.starcoin.org',
-            '2': 'https://proxima-seed.starcoin.org',
-            '251': 'https://barnard-seed.starcoin.org',
-            '253': 'https://halley-seed.starcoin.org',
-            '254': 'http://localhost:9850',
-          }
           const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
-          console.log({ functionId, tyArgs, args, nodeUrl })
+          // console.log({ functionId, tyArgs, args, nodeUrl })
 
           const scriptFunction = await utils.tx.encodeScriptFunctionByResolve(functionId, tyArgs, args, nodeUrl)
-          console.log(scriptFunction)
 
           // // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
           const payloadInHex = (function () {
@@ -482,19 +481,12 @@ const initialize = async () => {
             scriptFunction.serialize(se)
             return hexlify(se.getBytes())
           })()
-          console.log({ payloadInHex })
+          // console.log({ payloadInHex })
 
           const txParams = {
             data: payloadInHex,
           }
 
-          const expiredSecs = parseInt(document.getElementById('expiredSecsInput').value, 10)
-          console.log({ expiredSecs })
-          if (expiredSecs > 0) {
-            txParams.expiredSecs = expiredSecs
-          }
-
-          console.log({ txParams })
           const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
           console.log({ transactionHash })
         }
@@ -505,6 +497,57 @@ const initialize = async () => {
       }
       claimAirdropResult.innerHTML = 'Call Completed'
       claimAirdrop.disabled = false
+    }
+
+    /**
+     * Check is Claimed
+     */
+    checkClaimedAirdrop.onclick = async () => {
+      claimAirdropResult.innerHTML = 'Calling'
+      checkClaimedAirdrop.disabled = true
+      try {
+        const filterResluts = airdropRecords.filter((record) => record.address.toLowerCase() === accountsDiv.innerHTML.toLowerCase());
+        if (filterResluts[0]) {
+          const record = filterResluts[0]
+          const module = airdropModuleMap[window.starcoin.networkVersion]
+          if (!module) {
+            window.alert('airdrop contract is not deployed on this network!')
+            claimAirdropResult.innerHTML = 'Call Failed'
+            claimAirdrop.disabled = false
+            return false;
+          }
+          // const functionId = `${module}::is_claimd`
+          const functionId = '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd'
+          const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
+          const args = [record.ownerAddress, `${record.airDropId}`, `x\"${record.root.slice(2)}\"`, `${record.idx}u64`]
+          console.log(args)
+          const isClaimed = await new Promise((resolve, reject) => {
+            return starcoinProvider.send(
+              'contract.call_v2',
+              [
+                {
+                  function_id: functionId,
+                  type_args: tyArgs,
+                  args,
+                },
+              ],
+            ).then((result) => {
+              if (result && Array.isArray(result) && result.length) {
+                resolve(result[0])
+              } else {
+                reject(new Error('fetch failed'))
+              }
+
+            })
+          });
+          claimAirdropResult.innerHTML = `Claimed is ${isClaimed}`
+          checkClaimedAirdrop.disabled = false
+        }
+      } catch (error) {
+        claimAirdropResult.innerHTML = 'Call Failed'
+        checkClaimedAirdrop.disabled = false
+        throw error
+      }
     }
   }
 

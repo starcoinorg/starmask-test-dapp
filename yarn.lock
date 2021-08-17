@@ -581,10 +581,10 @@
   dependencies:
     mkdirp "^1.0.4"
 
-"@starcoin/starcoin@^1.4.8":
-  version "1.4.8"
-  resolved "https://registry.npmjs.org/@starcoin/starcoin/-/starcoin-1.4.8.tgz#37a236641c4489e4931e15a9ec113c2774f6d281"
-  integrity sha512-4RwpXVMgbGbBEfcFnq4cBAZKmr46AF+oTcmc53vGJ2iW1mxbL2jHE42/XeER42tQ/z+yzgJhrrG5YP5HpM9ZPg==
+"@starcoin/starcoin@^1.4.9":
+  version "1.4.9"
+  resolved "https://registry.npmjs.org/@starcoin/starcoin/-/starcoin-1.4.9.tgz#c02d2ba12d64f541fde664c5567ec759ae761ad1"
+  integrity sha512-QuDgxoCc3FW0vMchV28Iy4QKLw9b+1idw90u7qiVkbiEvDl8+JoOublJiVewHc2bitxzTE0/Yfo/ZRsb74sbww==
   dependencies:
     "@ethersproject/basex" "^5.0.4"
     "@ethersproject/bignumber" "^5.0"
