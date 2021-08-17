@@ -74,11 +74,11 @@ const airdropRecords = [
   }
 ]
 
-const airdropModuleMap = {
+const airdropFunctionIdMap = {
   '1': '', // main
   '2': '', // proxima
-  '251': '0xf8af03dd08de49d81e4efd9e24c039cc::MerkleDistributorScript', // barnard
-  '253': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript', // halley
+  '251': '0xf8af03dd08de49d81e4efd9e24c039cc::MerkleDistributorScript::claim_script', // barnard
+  '253': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // halley
   '254': '', // localhost
 }
 
@@ -459,14 +459,13 @@ const initialize = async () => {
         if (filterResluts[0]) {
           const record = filterResluts[0]
 
-          const module = airdropModuleMap[window.starcoin.networkVersion]
+          const functionId = airdropFunctionIdMap[window.starcoin.networkVersion]
           if (!module) {
             window.alert('airdrop contract is not deployed on this network!')
             claimAirdropResult.innerHTML = 'Call Failed'
             claimAirdrop.disabled = false
             return false;
           }
-          const functionId = `${module}::claim_script`
           const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
           const args = [record.ownerAddress, record.airDropId, record.root, record.idx, record.amount, record.proof]
 
@@ -509,14 +508,7 @@ const initialize = async () => {
         const filterResluts = airdropRecords.filter((record) => record.address.toLowerCase() === accountsDiv.innerHTML.toLowerCase());
         if (filterResluts[0]) {
           const record = filterResluts[0]
-          const module = airdropModuleMap[window.starcoin.networkVersion]
-          if (!module) {
-            window.alert('airdrop contract is not deployed on this network!')
-            claimAirdropResult.innerHTML = 'Call Failed'
-            claimAirdrop.disabled = false
-            return false;
-          }
-          // const functionId = `${module}::is_claimd`
+
           const functionId = '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd'
           const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
           const args = [record.ownerAddress, `${record.airDropId}`, `x\"${record.root.slice(2)}\"`, `${record.idx}u64`]
