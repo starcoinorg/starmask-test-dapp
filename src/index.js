@@ -413,40 +413,47 @@ const initialize = async () => {
       claimAirdropResult.innerHTML = 'Calling'
       claimAirdrop.disabled = true
       try {
-
-        const air_drop_id = 1629111755864
-        const owner_address = '0xf8af03dd08de49d81e4efd9e24c039cc'
-        const root = '0x9942cacc71d92103df4831aebdaa3b66d8eb3dfaa291ec2bf59b4c3e902f5e39'
-
-        const proofs = [
+        const records = [
           {
-            "address": "0x3f19d5422824f47E6C021978CeE98f35",
-            "index": 0,
-            "amount": 2000000000,
-            "proof": [
-              "0xf4bb4b120cea39dd8b7c373c356aecb6b3ae2de2a372ec4b7a393a803cf6380e"
-            ]
+            airDropId: 1629183961184,
+            ownerAddress: '0x3f19d5422824f47e6c021978cee98f35',
+            root: '0x95897dd6c2fb94d0543dc745471c12910eff0e9b886686c79e251038cb1b4d02',
+            address: '0x3f19d5422824f47e6c021978cee98f35',
+            idx: 0,
+            amount: 1000000000,
+            proof: [
+              '0x8e942cfc78768a015a18657d8da260ce16744136cea62a9dd17159a9f0dc5110'
+            ],
           },
           {
-            "address": "0xD7f20bEFd34B9f1ab8aeae98b82a5A51",
-            "index": 1,
-            "amount": 2000000000,
-            "proof": [
-              "0x619dbde59292fd9e0f845059a12aa8aef367ac3efe560f31b059711d7f0c5a07"
-            ]
+            airDropId: 1629183961184,
+            ownerAddress: '0x3f19d5422824f47e6c021978cee98f35',
+            root: '0x95897dd6c2fb94d0543dc745471c12910eff0e9b886686c79e251038cb1b4d02',
+            address: '0xd7f20befd34b9f1ab8aeae98b82a5a51',
+            idx: 1,
+            amount: 1000000000,
+            proof: [
+              '0xd2f61a7313c5d178714c3dfdff3eb76737886611fa583764efd52f905ae6dda2'
+            ],
           },
         ]
 
-        console.log(proofs)
-        console.log(accountsDiv.innerHTML.toLowerCase())
-        const resluts = proofs.filter((proof) => proof.address.toLowerCase() === accountsDiv.innerHTML.toLowerCase());
-        console.log({ resluts })
-        if (resluts[0]) {
-          const record = resluts[0]
+        const filterResluts = records.filter((record) => record.address.toLowerCase() === accountsDiv.innerHTML.toLowerCase());
+        console.log({ filterResluts })
+        if (filterResluts[0]) {
+          const record = filterResluts[0]
 
-          const functionId = '0xf8af03dd08de49d81e4efd9e24c039cc::MerkleDistributorScript::claim_script'
+          const functionIdMap = {
+            '1': '0x::MerkleDistributorScript::claim_script',
+            '2': '0x::MerkleDistributorScript::claim_script',
+            '251': '0xf8af03dd08de49d81e4efd9e24c039cc::MerkleDistributorScript::claim_script',
+            '253': '0x7bEB045F2Dea2F7Fe50eDe88C3e19A72::MerkleDistributorScript::claim_script',
+            '254': '',
+          }
+
+          const functionId = functionIdMap[window.starcoin.networkVersion]
           const tyArgs = ['0x1::STC::STC']
-          const args = [owner_address, air_drop_id, root, record.index, record.amount, record.proof]
+          const args = [record.ownerAddress, record.airDropId, record.root, record.idx, record.amount, record.proof]
 
           console.log(args)
 
@@ -458,7 +465,7 @@ const initialize = async () => {
             '254': 'http://localhost:9850',
           }
           const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
-          console.log(window.starcoin.chainId, nodeUrl)
+          console.log({ functionId, tyArgs, args, nodeUrl })
 
           const scriptFunction = await utils.tx.encodeScriptFunctionByResolve(functionId, tyArgs, args, nodeUrl)
           console.log(scriptFunction)
