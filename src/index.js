@@ -75,9 +75,9 @@ const airdropRecords = [
 ]
 
 const airdropFunctionIdMap = {
-  '1': '', // main
+  '1': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // main
   '2': '', // proxima
-  '251': '0xf8af03dd08de49d81e4efd9e24c039cc::MerkleDistributorScript::claim_script', // barnard
+  '251': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // barnard
   '253': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // halley
   '254': '', // localhost
 }
@@ -511,7 +511,7 @@ const initialize = async () => {
 
           const functionId = '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd'
           const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
-          const args = [record.ownerAddress, `${record.airDropId}`, `x\"${record.root.slice(2)}\"`, `${record.idx}u64`]
+          const args = [record.ownerAddress, `${record.airDropId}`, `x"${record.root.slice(2)}"`, `${record.idx}u64`]
           console.log(args)
           const isClaimed = await new Promise((resolve, reject) => {
             return starcoinProvider.send(
