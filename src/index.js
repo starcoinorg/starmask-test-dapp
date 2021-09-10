@@ -53,6 +53,8 @@ const claimAirdropResult = document.getElementById('claimAirdropResult')
 const mintWithImage = document.getElementById('mintWithImage')
 const mintWithImageData = document.getElementById('mintWithImageData')
 const nftResult = document.getElementById('nftResult')
+const acceptNFT = document.getElementById('acceptNFT')
+const transferNFT = document.getElementById('transferNFT')
 
 const airdropRecords = [
   {
@@ -139,6 +141,8 @@ const initialize = async () => {
     checkClaimedAirdrop,
     mintWithImage,
     mintWithImageData,
+    acceptNFT,
+    transferNFT,
   ]
 
   const isStarMaskConnected = () => accounts && accounts.length > 0
@@ -186,6 +190,9 @@ const initialize = async () => {
       checkClaimedAirdrop.disabled = false
       mintWithImage.disabled = false
       mintWithImageData.disabled = false
+      mintWithImageData.disabled = false
+      acceptNFT.disabled = false
+      transferNFT.disabled = false
     }
 
     if (!isStarMaskInstalled()) {
@@ -634,7 +641,83 @@ const initialize = async () => {
     }
   }
 
+  /**
+   * accept NFT
+   */
+  acceptNFT.onclick = async () => {
+    nftResult.innerHTML = 'Calling acceptNFT'
+    acceptNFT.disabled = true
+    try {
+      const functionId = '0x1::NFTGalleryScripts::accept'
+      const tyArgs = ['0x2c5bd5fb513108d4557107e09c51656c::SimpleNFT::SimpleNFT',
+        '0x2c5bd5fb513108d4557107e09c51656c::SimpleNFT::SimpleNFTBody']
+      const args = []
 
+      const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
+      console.log({ functionId, tyArgs, args, nodeUrl })
+
+      const scriptFunction = await utils.tx.encodeScriptFunctionByResolve(functionId, tyArgs, args, nodeUrl)
+
+      const payloadInHex = (function () {
+        const se = new bcs.BcsSerializer()
+        scriptFunction.serialize(se)
+        return hexlify(se.getBytes())
+      })()
+      console.log({ payloadInHex })
+
+      const txParams = {
+        data: payloadInHex,
+      }
+
+      const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
+      console.log({ transactionHash })
+      nftResult.innerHTML = 'Call acceptNFT Completed'
+      acceptNFT.disabled = false
+    } catch (error) {
+      nftResult.innerHTML = 'Call acceptNFT Failed'
+      acceptNFT.disabled = false
+      throw error
+    }
+  }
+
+  /**
+   * transfer NFT
+   */
+  transferNFT.onclick = async () => {
+    nftResult.innerHTML = 'Calling transferNFT'
+    transferNFT.disabled = true
+    try {
+      const functionId = '0x1::NFTGalleryScripts::transfer'
+      const tyArgs = ['0x2c5bd5fb513108d4557107e09c51656c::SimpleNFT::SimpleNFT',
+        '0x2c5bd5fb513108d4557107e09c51656c::SimpleNFT::SimpleNFTBody']
+      const args = [7, '0xD7f20bEFd34B9f1ab8aeae98b82a5A51']
+
+      const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
+      console.log({ functionId, tyArgs, args, nodeUrl })
+
+      const scriptFunction = await utils.tx.encodeScriptFunctionByResolve(functionId, tyArgs, args, nodeUrl)
+
+      const payloadInHex = (function () {
+        const se = new bcs.BcsSerializer()
+        scriptFunction.serialize(se)
+        return hexlify(se.getBytes())
+      })()
+      console.log({ payloadInHex })
+
+      const txParams = {
+        data: payloadInHex,
+      }
+
+      const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
+      console.log({ transactionHash })
+      nftResult.innerHTML = 'Call transferNFT Completed'
+      transferNFT.disabled = false
+    } catch (error) {
+      nftResult.innerHTML = 'Call transferNFT Failed'
+      transferNFT.disabled = false
+      throw error
+    }
+  }
 
   function handleNewAccounts(newAccounts) {
     accounts = newAccounts
