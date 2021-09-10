@@ -49,6 +49,11 @@ const claimAirdrop = document.getElementById('claimAirdrop')
 const checkClaimedAirdrop = document.getElementById('checkClaimedAirdrop')
 const claimAirdropResult = document.getElementById('claimAirdropResult')
 
+// NFT Section
+const mintWithImage = document.getElementById('mintWithImage')
+const mintWithImageData = document.getElementById('mintWithImageData')
+const nftResult = document.getElementById('nftResult')
+
 const airdropRecords = [
   {
     airDropId: 1629220858501,
@@ -90,6 +95,13 @@ const nodeUrlMap = {
   '254': 'http://localhost:9850',
 }
 
+const nft = {
+  name: 'my_test_nft',
+  imageUrl: 'ipfs:://QmSPcvcXgdtHHiVTAAarzTeubk5X3iWymPAoKBfiRFjPMY',
+  imageData: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6Y2M9Imh0dHA6Ly93ZWIucmVzb3VyY2Uub3JnL2NjLyIgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIiB4bWxuczpzb2RpcG9kaT0iaHR0cDovL3NvZGlwb2RpLnNvdXJjZWZvcmdlLm5ldC9EVEQvc29kaXBvZGktMC5kdGQiIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIiB2ZXJzaW9uPSIxLjEiIGJhc2VQcm9maWxlPSJmdWxsIiB3aWR0aD0iMTUwcHgiIGhlaWdodD0iMTUwcHgiIHZpZXdCb3g9IjAgMCAxNTAgMTUwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCBtZWV0IiBpZD0ic3ZnX2RvY3VtZW50IiBzdHlsZT0iem9vbTogMTsiPjwhLS0gQ3JlYXRlZCB3aXRoIG1hY1NWRyAtIGh0dHBzOi8vbWFjc3ZnLm9yZy8gLSBodHRwczovL2dpdGh1Yi5jb20vZHN3YXJkMi9tYWNzdmcvIC0tPjx0aXRsZSBpZD0ic3ZnX2RvY3VtZW50X3RpdGxlIj5VbnRpdGxlZC5zdmc8L3RpdGxlPjxkZWZzIGlkPSJzdmdfZG9jdW1lbnRfZGVmcyI+PC9kZWZzPjxnIGlkPSJtYWluX2dyb3VwIj48cmVjdCBpZD0iYmFja2dyb3VuZF9yZWN0IiBmaWxsPSIjMTU4OGYxIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjE1MHB4IiBoZWlnaHQ9IjE1MHB4Ij48L3JlY3Q+PC9nPjwvc3ZnPg==',
+  description: 'my_test_nft description',
+}
+
 const initialize = async () => {
   console.log('initialize')
   try {
@@ -125,6 +137,8 @@ const initialize = async () => {
     personalSignVerify,
     claimAirdrop,
     checkClaimedAirdrop,
+    mintWithImage,
+    mintWithImageData,
   ]
 
   const isStarMaskConnected = () => accounts && accounts.length > 0
@@ -170,6 +184,8 @@ const initialize = async () => {
       personalSign.disabled = false
       claimAirdrop.disabled = false
       checkClaimedAirdrop.disabled = false
+      mintWithImage.disabled = false
+      mintWithImageData.disabled = false
     }
 
     if (!isStarMaskInstalled()) {
@@ -508,7 +524,6 @@ const initialize = async () => {
         const filterResluts = airdropRecords.filter((record) => record.address.toLowerCase() === accountsDiv.innerHTML.toLowerCase());
         if (filterResluts[0]) {
           const record = filterResluts[0]
-
           const functionId = '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd'
           const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
           const args = [record.ownerAddress, `${record.airDropId}`, `x"${record.root.slice(2)}"`, `${record.idx}u64`]
@@ -542,6 +557,84 @@ const initialize = async () => {
       }
     }
   }
+
+  /**
+   * mint With Image
+   */
+  mintWithImage.onclick = async () => {
+    nftResult.innerHTML = 'Calling mintWithImage'
+    mintWithImage.disabled = true
+    try {
+      const functionId = '0x2c5bd5fb513108d4557107e09c51656c::SimpleNFTScripts::mint_with_image'
+      const tyArgs = []
+      const args = [nft.name, nft.imageUrl, nft.description]
+
+      const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
+      console.log({ functionId, tyArgs, args, nodeUrl })
+
+      const scriptFunction = await utils.tx.encodeScriptFunctionByResolve(functionId, tyArgs, args, nodeUrl)
+
+      const payloadInHex = (function () {
+        const se = new bcs.BcsSerializer()
+        scriptFunction.serialize(se)
+        return hexlify(se.getBytes())
+      })()
+      console.log({ payloadInHex })
+
+      const txParams = {
+        data: payloadInHex,
+      }
+
+      const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
+      console.log({ transactionHash })
+      nftResult.innerHTML = 'Call mintWithImage Completed'
+      mintWithImage.disabled = false
+    } catch (error) {
+      nftResult.innerHTML = 'Call mintWithImage Failed'
+      mintWithImage.disabled = false
+      throw error
+    }
+  }
+
+  /**
+   * mint With Image Data
+   */
+  mintWithImageData.onclick = async () => {
+    nftResult.innerHTML = 'Calling mintWithImageData'
+    mintWithImageData.disabled = true
+    try {
+      const functionId = '0x2c5bd5fb513108d4557107e09c51656c::SimpleNFTScripts::mint_with_image_data'
+      const tyArgs = []
+      const args = [nft.name, nft.imageData, nft.description]
+
+      const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
+      console.log({ functionId, tyArgs, args, nodeUrl })
+
+      const scriptFunction = await utils.tx.encodeScriptFunctionByResolve(functionId, tyArgs, args, nodeUrl)
+
+      const payloadInHex = (function () {
+        const se = new bcs.BcsSerializer()
+        scriptFunction.serialize(se)
+        return hexlify(se.getBytes())
+      })()
+      console.log({ payloadInHex })
+
+      const txParams = {
+        data: payloadInHex,
+      }
+
+      const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
+      console.log({ transactionHash })
+      nftResult.innerHTML = 'Call mintWithImageData Completed'
+      mintWithImageData.disabled = false
+    } catch (error) {
+      nftResult.innerHTML = 'Call mintWithImageData Failed'
+      mintWithImageData.disabled = false
+      throw error
+    }
+  }
+
+
 
   function handleNewAccounts(newAccounts) {
     accounts = newAccounts
