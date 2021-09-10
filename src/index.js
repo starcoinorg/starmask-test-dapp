@@ -53,6 +53,7 @@ const claimAirdropResult = document.getElementById('claimAirdropResult')
 const mintWithImage = document.getElementById('mintWithImage')
 const mintWithImageData = document.getElementById('mintWithImageData')
 const nftResult = document.getElementById('nftResult')
+const isAcceptNFT = document.getElementById('isAcceptNFT')
 const acceptNFT = document.getElementById('acceptNFT')
 const transferNFT = document.getElementById('transferNFT')
 
@@ -141,6 +142,7 @@ const initialize = async () => {
     checkClaimedAirdrop,
     mintWithImage,
     mintWithImageData,
+    isAcceptNFT,
     acceptNFT,
     transferNFT,
   ]
@@ -191,6 +193,7 @@ const initialize = async () => {
       mintWithImage.disabled = false
       mintWithImageData.disabled = false
       mintWithImageData.disabled = false
+      isAcceptNFT.disabled = false
       acceptNFT.disabled = false
       transferNFT.disabled = false
     }
@@ -637,6 +640,46 @@ const initialize = async () => {
     } catch (error) {
       nftResult.innerHTML = 'Call mintWithImageData Failed'
       mintWithImageData.disabled = false
+      throw error
+    }
+  }
+
+  /**
+   * Check is accept NFT
+   */
+  isAcceptNFT.onclick = async () => {
+    nftResult.innerHTML = 'Calling isAcceptNFT'
+    isAcceptNFT.disabled = true
+    try {
+      const functionId = '0x1::NFTGallery::is_accept'
+      const tyArgs = ['0x2c5bd5fb513108d4557107e09c51656c::SimpleNFT::SimpleNFT',
+        '0x2c5bd5fb513108d4557107e09c51656c::SimpleNFT::SimpleNFTBody']
+      const args = ['0x3f19d5422824f47E6C021978CeE98f35']
+      console.log(args)
+      const isAccept = await new Promise((resolve, reject) => {
+        return starcoinProvider.send(
+          'contract.call_v2',
+          [
+            {
+              function_id: functionId,
+              type_args: tyArgs,
+              args,
+            },
+          ],
+        ).then((result) => {
+          if (result && Array.isArray(result) && result.length) {
+            resolve(result[0])
+          } else {
+            reject(new Error('fetch failed'))
+          }
+
+        })
+      });
+      nftResult.innerHTML = `isAcceptNFT is ${isAccept}`
+      isAcceptNFT.disabled = false
+    } catch (error) {
+      nftResult.innerHTML = 'Call isAcceptNFT Failed'
+      isAcceptNFT.disabled = false
       throw error
     }
   }
