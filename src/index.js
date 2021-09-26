@@ -2,6 +2,7 @@ import { arrayify, hexlify } from '@ethersproject/bytes'
 import BigNumber from 'bignumber.js'
 import StarMaskOnboarding from '@starcoin/starmask-onboarding'
 import { providers, utils, bcs, encoding } from '@starcoin/starcoin'
+import { encrypt } from 'eth-sig-util'
 
 let starcoinProvider
 
@@ -43,6 +44,15 @@ const personalSign = document.getElementById('personalSign')
 const personalSignResult = document.getElementById('personalSignResult')
 const personalSignVerify = document.getElementById('personalSignVerify')
 const personalSignRecoverResult = document.getElementById('personalSignRecoverResult')
+
+// Encrypt / Decrypt Section
+const getEncryptionKeyButton = document.getElementById('getEncryptionKeyButton')
+const encryptMessageInput = document.getElementById('encryptMessageInput')
+const encryptButton = document.getElementById('encryptButton')
+const decryptButton = document.getElementById('decryptButton')
+const encryptionKeyDisplay = document.getElementById('encryptionKeyDisplay')
+const ciphertextDisplay = document.getElementById('ciphertextDisplay')
+const cleartextDisplay = document.getElementById('cleartextDisplay')
 
 // Airdrop Section
 const claimAirdrop = document.getElementById('claimAirdrop')
@@ -138,6 +148,10 @@ const initialize = async () => {
     tokenAddressButton,
     personalSign,
     personalSignVerify,
+    getEncryptionKeyButton,
+    encryptMessageInput,
+    encryptButton,
+    decryptButton,
     claimAirdrop,
     checkClaimedAirdrop,
     mintWithImage,
@@ -188,6 +202,7 @@ const initialize = async () => {
       callContractButton.disabled = false
       deployButton.disabled = false
       personalSign.disabled = false
+      getEncryptionKeyButton.disabled = false
       claimAirdrop.disabled = false
       checkClaimedAirdrop.disabled = false
       mintWithImage.disabled = false
@@ -471,6 +486,65 @@ const initialize = async () => {
       } catch (err) {
         console.error(err)
         personalSignRecoverResult.innerHTML = `Error: ${err.message}`
+      }
+    }
+
+    /**
+     * Encrypt / Decrypt
+     */
+
+    getEncryptionKeyButton.onclick = async () => {
+      try {
+        const publicKey = await window.starcoin.request({
+          method: 'stc_getEncryptionPublicKey',
+          params: [accounts[0]],
+        })
+        encryptionKeyDisplay.innerText = publicKey
+        encryptMessageInput.disabled = false
+      } catch (error) {
+        encryptionKeyDisplay.innerText = `Error: ${error.message}`
+        encryptMessageInput.disabled = true
+        encryptButton.disabled = true
+        decryptButton.disabled = true
+      }
+    }
+
+    encryptMessageInput.onkeyup = () => {
+      if (
+        !getEncryptionKeyButton.disabled &&
+        encryptMessageInput.value.length > 0
+      ) {
+        if (encryptButton.disabled) {
+          encryptButton.disabled = false
+        }
+      } else if (!encryptButton.disabled) {
+        encryptButton.disabled = true
+      }
+    }
+
+    encryptButton.onclick = () => {
+      try {
+        const ecrryptResult = encrypt(
+          encryptionKeyDisplay.innerText,
+          { 'data': encryptMessageInput.value },
+          'x25519-xsalsa20-poly1305',
+        )
+        ciphertextDisplay.innerText = stringifiableToHex(ecrryptResult)
+        decryptButton.disabled = false
+      } catch (error) {
+        ciphertextDisplay.innerText = `Error: ${error.message}`
+        decryptButton.disabled = true
+      }
+    }
+
+    decryptButton.onclick = async () => {
+      try {
+        cleartextDisplay.innerText = await window.starcoin.request({
+          method: 'stc_decrypt',
+          params: [ciphertextDisplay.innerText, window.starcoin.selectedAddress],
+        })
+      } catch (error) {
+        cleartextDisplay.innerText = `Error: ${error.message}`
       }
     }
 
@@ -827,3 +901,8 @@ function getPermissionsDisplayString(permissionsArray) {
   const permissionNames = permissionsArray.map((perm) => perm.parentCapability)
   return permissionNames.reduce((acc, name) => `${acc}${name}, `, '').replace(/, $/u, '')
 }
+
+function stringifiableToHex(value) {
+  return hexlify(Buffer.from(JSON.stringify(value)))
+}
+
