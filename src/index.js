@@ -67,6 +67,12 @@ const isAcceptNFT = document.getElementById('isAcceptNFT')
 const acceptNFT = document.getElementById('acceptNFT')
 const transferNFT = document.getElementById('transferNFT')
 
+// AutoAcceptToken Section
+const isAutoAcceptToken = document.getElementById('isAutoAcceptToken')
+const autoAcceptTokenOn = document.getElementById('autoAcceptTokenOn')
+const autoAcceptTokenOff = document.getElementById('autoAcceptTokenOff')
+const autoAcceptTokenResult = document.getElementById('autoAcceptTokenResult')
+
 const airdropRecords = [
   {
     airDropId: 1629220858501,
@@ -159,6 +165,9 @@ const initialize = async () => {
     isAcceptNFT,
     acceptNFT,
     transferNFT,
+    isAutoAcceptToken,
+    autoAcceptTokenOn,
+    autoAcceptTokenOff,
   ]
 
   const isStarMaskConnected = () => accounts && accounts.length > 0
@@ -211,6 +220,9 @@ const initialize = async () => {
       isAcceptNFT.disabled = false
       acceptNFT.disabled = false
       transferNFT.disabled = false
+      isAutoAcceptToken.disabled = false
+      autoAcceptTokenOn.disabled = false
+      autoAcceptTokenOff.disabled = false
     }
 
     if (!isStarMaskInstalled()) {
@@ -834,6 +846,97 @@ const initialize = async () => {
       transferNFT.disabled = false
       throw error
     }
+  }
+
+  /**
+   * AutoAcceptToken
+   */
+  isAutoAcceptToken.onclick = async () => {
+    autoAcceptTokenResult.innerHTML = 'Calling isAutoAcceptToken'
+    isAutoAcceptToken.disabled = true
+
+    try {
+      const result = await window.starcoin.request({
+        method: 'state.get_resource',
+        params: [accounts[0], '0x1::Account::AutoAcceptToken'],
+      })
+      autoAcceptTokenResult.innerHTML = result && result.raw && parseInt(result.raw, 16) ? 'On' : 'Off'
+      isAutoAcceptToken.disabled = false
+    } catch (error) {
+      autoAcceptTokenResult.innerHTML = 'Call isAutoAcceptToken Failed'
+      isAutoAcceptToken.disabled = false
+      throw error
+    }
+  }
+
+  autoAcceptTokenOn.onclick = async () => {
+    autoAcceptTokenResult.innerHTML = 'Turn On'
+    console.log([accounts[0]])
+    try {
+      const functionId = '0x1::AccountScripts::enable_auto_accept_token'
+      const tyArgs = []
+      const args = []
+
+      const scriptFunction = utils.tx.encodeScriptFunction(functionId, tyArgs, args)
+
+      // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
+      const payloadInHex = (function () {
+        const se = new bcs.BcsSerializer()
+        scriptFunction.serialize(se)
+        return hexlify(se.getBytes())
+      })()
+      console.log({ payloadInHex })
+
+      const txParams = {
+        data: payloadInHex,
+      }
+
+      const expiredSecs = parseInt(document.getElementById('expiredSecsInput').value, 10)
+      if (expiredSecs > 0) {
+        txParams.expiredSecs = expiredSecs
+      }
+
+      const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
+      console.log({ transactionHash })
+    } catch (error) {
+      autoAcceptTokenResult.innerHTML = 'Call Failed'
+      throw error
+    }
+    autoAcceptTokenResult.innerHTML = 'Call Completed'
+  }
+
+  autoAcceptTokenOff.onclick = async () => {
+    autoAcceptTokenResult.innerHTML = 'Turn Off'
+    try {
+      const functionId = '0x1::AccountScripts::disable_auto_accept_token'
+      const tyArgs = []
+      const args = []
+
+      const scriptFunction = utils.tx.encodeScriptFunction(functionId, tyArgs, args)
+
+      // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
+      const payloadInHex = (function () {
+        const se = new bcs.BcsSerializer()
+        scriptFunction.serialize(se)
+        return hexlify(se.getBytes())
+      })()
+
+      const txParams = {
+        data: payloadInHex,
+      }
+
+      const expiredSecs = parseInt(document.getElementById('expiredSecsInput').value, 10)
+      if (expiredSecs > 0) {
+        txParams.expiredSecs = expiredSecs
+      }
+
+      const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
+      console.log({ transactionHash })
+    } catch (error) {
+      autoAcceptTokenResult.innerHTML = 'Call Failed'
+      throw error
+    }
+    autoAcceptTokenResult.innerHTML = 'Call Completed'
   }
 
   function handleNewAccounts(newAccounts) {
