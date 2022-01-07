@@ -1,8 +1,9 @@
 import { arrayify, hexlify } from '@ethersproject/bytes'
 import BigNumber from 'bignumber.js'
 import StarMaskOnboarding from '@starcoin/starmask-onboarding'
-import { providers, utils, bcs, encoding } from '@starcoin/starcoin'
+import { providers, utils, bcs, encoding, version as starcoinVersion } from '@starcoin/starcoin'
 import { encrypt } from 'eth-sig-util'
+import { compare } from 'compare-versions';
 
 let starcoinProvider
 
@@ -257,7 +258,7 @@ const initialize = async () => {
         getAccountsResults.innerHTML = _accounts[0] || 'Not able to get accounts'
       } catch (err) {
         console.error(err)
-        getAccountsResults.innerHTML = `Error: ${err.message}`
+        getAccountsResults.innerHTML = `Error: ${ err.message }`
       }
     }
 
@@ -275,7 +276,7 @@ const initialize = async () => {
         permissionsResult.innerHTML = getPermissionsDisplayString(permissionsArray)
       } catch (err) {
         console.error(err)
-        permissionsResult.innerHTML = `Error: ${err.message}`
+        permissionsResult.innerHTML = `Error: ${ err.message }`
       }
     }
 
@@ -288,7 +289,7 @@ const initialize = async () => {
         permissionsResult.innerHTML = getPermissionsDisplayString(permissionsArray)
       } catch (err) {
         console.error(err)
-        permissionsResult.innerHTML = `Error: ${err.message}`
+        permissionsResult.innerHTML = `Error: ${ err.message }`
       }
     }
 
@@ -315,7 +316,7 @@ const initialize = async () => {
       const BIG_NUMBER_NANO_STC_MULTIPLIER = new BigNumber('1000000000')
       const sendAmountSTC = new BigNumber(String(document.getElementById('amountInput').value), 10)
       const sendAmountNanoSTC = sendAmountSTC.times(BIG_NUMBER_NANO_STC_MULTIPLIER)
-      const sendAmountHex = `0x${sendAmountNanoSTC.toString(16)}`
+      const sendAmountHex = `0x${ sendAmountNanoSTC.toString(16) }`
       console.log({ sendAmountHex, sendAmountNanoSTC: sendAmountNanoSTC.toString(10) })
 
       const txParams = {
@@ -361,7 +362,7 @@ const initialize = async () => {
         const BIG_NUMBER_NANO_STC_MULTIPLIER = new BigNumber('1000000000')
         const sendAmountSTC = new BigNumber(String(document.getElementById('amountInput').value), 10)
         const sendAmountNanoSTC = sendAmountSTC.times(BIG_NUMBER_NANO_STC_MULTIPLIER)
-        const sendAmountHex = `0x${sendAmountNanoSTC.toString(16)}`
+        const sendAmountHex = `0x${ sendAmountNanoSTC.toString(16) }`
 
         // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
         const amountSCSHex = (function () {
@@ -430,7 +431,7 @@ const initialize = async () => {
         throw error
       }
 
-      console.log(`Contract deployed! address: ${accounts[0]} transactionHash: ${transactionHash}`)
+      console.log(`Contract deployed! address: ${ accounts[0] } transactionHash: ${ transactionHash }`)
       contractStatus.innerHTML = 'Deployed'
       tokenAddressButton.disabled = false
       // console.log(contract)
@@ -440,7 +441,7 @@ const initialize = async () => {
       contractStatus.innerHTML = 'contract method request started'
       try {
         const result = await starcoinProvider.call({
-          function_id: `${accounts[0]}::ABC::token_address`,
+          function_id: `${ accounts[0] }::ABC::token_address`,
           type_args: [],
           args: [],
         })
@@ -461,7 +462,7 @@ const initialize = async () => {
         personalSignVerify.disabled = false
         personalSignRecoverResult.innerHTML = ''
         const from = accounts[0]
-        const msg = `0x${Buffer.from(exampleMessage, 'utf8').toString('hex')}`
+        const msg = `0x${ Buffer.from(exampleMessage, 'utf8').toString('hex') }`
         console.log({ msg })
         const networkId = networkDiv.innerHTML
         const extraParams = { networkId }
@@ -475,7 +476,7 @@ const initialize = async () => {
         personalSignResult.innerHTML = sign
       } catch (err) {
         console.error(err)
-        personalSign.innerHTML = `Error: ${err.message}`
+        personalSign.innerHTML = `Error: ${ err.message }`
       }
     }
 
@@ -490,14 +491,14 @@ const initialize = async () => {
         console.log({ recoveredAddr })
 
         if (recoveredAddr === from) {
-          console.log(`@starcoin/starcoin Successfully verified signer as ${recoveredAddr}`)
+          console.log(`@starcoin/starcoin Successfully verified signer as ${ recoveredAddr }`)
           personalSignRecoverResult.innerHTML = recoveredAddr
         } else {
           console.log('@starcoin/starcoin Failed to verify signer')
         }
       } catch (err) {
         console.error(err)
-        personalSignRecoverResult.innerHTML = `Error: ${err.message}`
+        personalSignRecoverResult.innerHTML = `Error: ${ err.message }`
       }
     }
 
@@ -514,7 +515,7 @@ const initialize = async () => {
         encryptionKeyDisplay.innerText = publicKey
         encryptMessageInput.disabled = false
       } catch (error) {
-        encryptionKeyDisplay.innerText = `Error: ${error.message}`
+        encryptionKeyDisplay.innerText = `Error: ${ error.message }`
         encryptMessageInput.disabled = true
         encryptButton.disabled = true
         decryptButton.disabled = true
@@ -544,7 +545,7 @@ const initialize = async () => {
         ciphertextDisplay.innerText = stringifiableToHex(ecrryptResult)
         decryptButton.disabled = false
       } catch (error) {
-        ciphertextDisplay.innerText = `Error: ${error.message}`
+        ciphertextDisplay.innerText = `Error: ${ error.message }`
         decryptButton.disabled = true
       }
     }
@@ -556,7 +557,7 @@ const initialize = async () => {
           params: [ciphertextDisplay.innerText, window.starcoin.selectedAddress],
         })
       } catch (error) {
-        cleartextDisplay.innerText = `Error: ${error.message}`
+        cleartextDisplay.innerText = `Error: ${ error.message }`
       }
     }
 
@@ -622,7 +623,7 @@ const initialize = async () => {
           const record = filterResluts[0]
           const functionId = '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributor2::is_claimd'
           const tyArgs = ['0x00000000000000000000000000000001::STC::STC']
-          const args = [record.ownerAddress, `${record.airDropId}`, `x"${record.root.slice(2)}"`, `${record.idx}u64`]
+          const args = [record.ownerAddress, `${ record.airDropId }`, `x"${ record.root.slice(2) }"`, `${ record.idx }u64`]
           console.log(args)
           const isClaimed = await new Promise((resolve, reject) => {
             return starcoinProvider.send(
@@ -643,7 +644,7 @@ const initialize = async () => {
 
             })
           });
-          claimAirdropResult.innerHTML = `Claimed is ${isClaimed}`
+          claimAirdropResult.innerHTML = `Claimed is ${ isClaimed }`
           checkClaimedAirdrop.disabled = false
         }
       } catch (error) {
@@ -761,7 +762,7 @@ const initialize = async () => {
 
         })
       });
-      nftResult.innerHTML = `isAcceptNFT is ${isAccept}`
+      nftResult.innerHTML = `isAcceptNFT is ${ isAccept }`
       isAcceptNFT.disabled = false
     } catch (error) {
       nftResult.innerHTML = 'Call isAcceptNFT Failed'
@@ -891,6 +892,13 @@ const initialize = async () => {
         data: payloadInHex,
       }
 
+      // addGasBufferMultiplier is supported since:
+      // @starcoin/starcoin >= 1.8.0 and starmask >= 3.3.0
+      // so we need to check the version of @starcoin/starcoin before using it in the dapps
+      if (compare(starcoinVersion || '1.0.0', '1.8.0', '>=') && document.getElementById('addGasBufferMultiplier').value) {
+        const addGasBufferMultiplier = parseFloat(document.getElementById('addGasBufferMultiplier').value, 10) || 1.5
+        txParams.addGasBufferMultiplier = addGasBufferMultiplier
+      }
       const expiredSecs = parseInt(document.getElementById('expiredSecsInput').value, 10)
       if (expiredSecs > 0) {
         txParams.expiredSecs = expiredSecs
@@ -964,7 +972,7 @@ const initialize = async () => {
       const chainInfo = await window.starcoin.request({
         method: 'chain.id',
       })
-      handleNewChain(`0x${chainInfo.id.toString(16)}`)
+      handleNewChain(`0x${ chainInfo.id.toString(16) }`)
       handleNewNetwork(chainInfo.id)
     } catch (err) {
       console.error(err)
@@ -1002,7 +1010,7 @@ function getPermissionsDisplayString(permissionsArray) {
     return 'No permissions found.'
   }
   const permissionNames = permissionsArray.map((perm) => perm.parentCapability)
-  return permissionNames.reduce((acc, name) => `${acc}${name}, `, '').replace(/, $/u, '')
+  return permissionNames.reduce((acc, name) => `${ acc }${ name }, `, '').replace(/, $/u, '')
 }
 
 function stringifiableToHex(value) {
