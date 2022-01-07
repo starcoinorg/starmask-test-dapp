@@ -1,6 +1,6 @@
 {
   "name": "starmask-test-dapp",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "A simple dapp used in Starmask e2e tests.",
   "engines": {
     "node": ">= 10"
@@ -32,11 +32,12 @@
   "homepage": "https://github.com/starcoinorg/starmask-test-dapp",
   "dependencies": {
     "@ethersproject/bytes": "^5.0.6",
-    "bignumber.js": "^9.0.1"
+    "bignumber.js": "^9.0.1",
+    "compare-versions": "^4.1.2"
   },
   "devDependencies": {
     "@metamask/eslint-config": "^4.0.0",
-    "@starcoin/starcoin": "^1.5.3",
+    "@starcoin/starcoin": "^1.8.0",
     "@starcoin/starmask-onboarding": "^1.0.0",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^6.0.2",
