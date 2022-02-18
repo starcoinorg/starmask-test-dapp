@@ -55,6 +55,10 @@ const encryptionKeyDisplay = document.getElementById('encryptionKeyDisplay')
 const ciphertextDisplay = document.getElementById('ciphertextDisplay')
 const cleartextDisplay = document.getElementById('cleartextDisplay')
 
+// Cross Chain
+const crossChainLockWithSTC = document.getElementById('crossChainLockWithSTC')
+const crossChainResult = document.getElementById('crossChainResult')
+
 // Airdrop Section
 const claimAirdrop = document.getElementById('claimAirdrop')
 const checkClaimedAirdrop = document.getElementById('checkClaimedAirdrop')
@@ -159,6 +163,7 @@ const initialize = async () => {
     decryptButton,
     claimAirdrop,
     checkClaimedAirdrop,
+    crossChainLockWithSTC,
     mintWithImage,
     mintWithImageData,
     isAcceptNFT,
@@ -214,7 +219,7 @@ const initialize = async () => {
       claimAirdrop.disabled = false
       checkClaimedAirdrop.disabled = false
       mintWithImage.disabled = false
-      mintWithImageData.disabled = false
+      crossChainLockWithSTC.disabled = false
       mintWithImageData.disabled = false
       isAcceptNFT.disabled = false
       acceptNFT.disabled = false
@@ -559,6 +564,100 @@ const initialize = async () => {
         })
       } catch (error) {
         cleartextDisplay.innerText = `Error: ${ error.message }`
+      }
+    }
+
+    /**
+     * Cross Chain Lock with STC
+     */
+    crossChainLockWithSTC.onclick = async () => {
+      crossChainResult.innerHTML = 'Calling LockWithSTC'
+      crossChainLockWithSTC.disabled = true
+      try {
+        const functionId = '0x18351d311d32201149a4df2a9fc2db8a::CrossChainScript::lock_with_stc_fee'
+        const tyArgs = []
+        // const fromAssetHash = "0x00000000000000000000000000000001::STC::STC"
+        // const toChainId = 318
+        // const toAddress = "0x18351d311d32201149a4df2a9fc2db8a"
+        // const amount = 10000000
+        // const fee = 5000000
+        // const id = 1
+
+        const fromAssetHash = "0x18351d311d32201149a4df2a9fc2db8a::XETH::XETH"
+        const toChainId = 2
+        const toAddress = "0x208d1ae5bb7fd323ce6386c443473ed660825d46"
+        const amount = 115555000000
+        const fee = 5000000
+        const id = 1
+
+        const fromAssetHashHex = (function () {
+          const se = new bcs.BcsSerializer();
+          se.serializeStr(fromAssetHash);
+          return hexlify(se.getBytes());
+        })();
+
+        console.log({ fromAssetHash, fromAssetHashHex })
+
+        const toChainIdHex = (function () {
+          const se = new bcs.BcsSerializer();
+          se.serializeU64(toChainId);
+          return hexlify(se.getBytes());
+        })();
+
+        const toAddressHex = (function () {
+          const se = new bcs.BcsSerializer();
+          se.serializeBytes(arrayify(toAddress));
+          return hexlify(se.getBytes());
+        })();
+
+        const amountHex = (function () {
+          const se = new bcs.BcsSerializer();
+          se.serializeU128(amount);
+          return hexlify(se.getBytes());
+        })();
+
+        const feeHex = (function () {
+          const se = new bcs.BcsSerializer();
+          se.serializeU128(fee);
+          return hexlify(se.getBytes());
+        })();
+
+        const idHex = (function () {
+          const se = new bcs.BcsSerializer();
+          se.serializeU128(id);
+          return hexlify(se.getBytes());
+        })();
+        const args = [
+          arrayify(fromAssetHashHex),
+          arrayify(toChainIdHex),
+          arrayify(toAddressHex),
+          arrayify(amountHex),
+          arrayify(feeHex),
+          arrayify(idHex),
+        ];
+        console.log({ fromAssetHashHex, args });
+        const scriptFunction = utils.tx.encodeScriptFunction(functionId, tyArgs, args);
+
+
+        const payloadInHex = (function () {
+          const se = new bcs.BcsSerializer()
+          scriptFunction.serialize(se)
+          return hexlify(se.getBytes())
+        })()
+        console.log({ payloadInHex })
+
+        const txParams = {
+          data: payloadInHex,
+        }
+
+        const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
+        console.log({ transactionHash })
+        crossChainResult.innerHTML = 'Call LockWithSTC Completed'
+        crossChainLockWithSTC.disabled = false
+      } catch (error) {
+        crossChainResult.innerHTML = 'Call LockWithSTC Failed'
+        crossChainLockWithSTC.disabled = false
+        throw error
       }
     }
 
