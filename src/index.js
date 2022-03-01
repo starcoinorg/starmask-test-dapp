@@ -57,6 +57,7 @@ const cleartextDisplay = document.getElementById('cleartextDisplay')
 
 // Cross Chain
 const crossChainLockWithSTC = document.getElementById('crossChainLockWithSTC')
+const crossChainGetLockTreasury = document.getElementById('crossChainGetLockTreasury')
 const crossChainResult = document.getElementById('crossChainResult')
 
 // Airdrop Section
@@ -132,6 +133,8 @@ const initialize = async () => {
     if (window.starcoin) {
       // We must specify the network as 'any' for starcoin to allow network changes
       starcoinProvider = new providers.Web3Provider(window.starcoin, 'any')
+      const blocknumber = await starcoinProvider.getBlockNumber()
+      console.log({ blocknumber })
     }
   } catch (error) {
     console.error(error)
@@ -164,6 +167,7 @@ const initialize = async () => {
     claimAirdrop,
     checkClaimedAirdrop,
     crossChainLockWithSTC,
+    crossChainGetLockTreasury,
     mintWithImage,
     mintWithImageData,
     isAcceptNFT,
@@ -220,6 +224,7 @@ const initialize = async () => {
       checkClaimedAirdrop.disabled = false
       mintWithImage.disabled = false
       crossChainLockWithSTC.disabled = false
+      crossChainGetLockTreasury.disabled = false
       mintWithImageData.disabled = false
       isAcceptNFT.disabled = false
       acceptNFT.disabled = false
@@ -652,11 +657,45 @@ const initialize = async () => {
 
         const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
         console.log({ transactionHash })
+        const transactionReceipt = await starcoinProvider.getTransactionInfo(transactionHash);
+        console.log({ transactionReceipt })
         crossChainResult.innerHTML = 'Call LockWithSTC Completed'
         crossChainLockWithSTC.disabled = false
       } catch (error) {
         crossChainResult.innerHTML = 'Call LockWithSTC Failed'
         crossChainLockWithSTC.disabled = false
+        throw error
+      }
+    }
+
+    crossChainGetLockTreasury.onclick = async () => {
+      crossChainResult.innerHTML = 'Get Lock Treasury'
+      crossChainGetLockTreasury.disabled = true
+      try {
+        const functionId = 'contract.get_resource'
+        const address = '0x18351d311d32201149a4df2a9fc2db8a'
+        const token = '0x18351d311d32201149a4df2a9fc2db8a::XETH::XETH'
+        const result = await new Promise((resolve, reject) => {
+          return starcoinProvider.send(
+            functionId,
+            [
+              address,
+              `0x18351d311d32201149a4df2a9fc2db8a::LockProxy::LockTreasury<${ token }>`,
+            ],
+          ).then((result) => {
+            if (result) {
+              resolve(result.value[0][1]['Struct']['value'][0][1]['U128'])
+            } else {
+              reject(new Error('fetch failed'))
+            }
+
+          })
+        });
+        crossChainResult.innerHTML = result
+        crossChainGetLockTreasury.disabled = false
+      } catch (error) {
+        crossChainResult.innerHTML = JSON.stringify(error)
+        crossChainGetLockTreasury.disabled = false
         throw error
       }
     }
