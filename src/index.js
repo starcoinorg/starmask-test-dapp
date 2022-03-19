@@ -4,6 +4,9 @@ import StarMaskOnboarding from '@starcoin/starmask-onboarding'
 import { providers, utils, bcs, encoding, version as starcoinVersion } from '@starcoin/starcoin'
 import { encrypt } from 'eth-sig-util'
 import { compare } from 'compare-versions';
+import jquery from 'jquery';
+import 'bootstrap';
+
 
 let starcoinProvider
 
@@ -39,6 +42,15 @@ const contractPayloadhex = document.getElementById('contractPayloadhex')
 const deployButton = document.getElementById('deployButton')
 const tokenAddressButton = document.getElementById('tokenAddressButton')
 const contractStatus = document.getElementById('contractStatus')
+
+// Call Contract Function
+const moduleIdInput = document.getElementById('moduleIdInput')
+const resolveModuleButton = document.getElementById('resolveModuleButton')
+const moduleFunctionsDiv = document.getElementById('moduleFunctionsDiv')
+const moduleFunctionTemplate = document.getElementById('moduleFunctionTemplate')
+const moduleFunctionArgTemplate = document.getElementById('moduleFunctionArgTemplate')
+const moduleFunctionRunBtnTemplate = document.getElementById('moduleFunctionRunBtnTemplate')
+const moduleFunctionQueryBtnTemplate = document.getElementById('moduleFunctionQueryBtnTemplate')
 
 // Signature Section
 const personalSign = document.getElementById('personalSign')
@@ -461,6 +473,73 @@ const initialize = async () => {
         console.log(error)
         throw error
       }
+    }
+
+    /**
+     * Call Contract Function
+     */
+    resolveModuleButton.onclick = async () => {
+      const moduleId = moduleIdInput.value
+      console.log("moduleId: " + moduleId)
+
+      try {
+        const result = await window.starcoin.request({
+          method: 'contract.get_code',
+          params: [moduleId],
+        })
+        console.log(result)
+      } catch (error) {
+        throw error
+      }
+
+      try {
+        const moduleInfo = await window.starcoin.request({
+          method: 'contract.resolve_module',
+          params: [moduleId],
+        })
+        console.log("moduleInfo: ")
+        console.log(moduleInfo)
+
+        const container = jquery(moduleFunctionsDiv)
+        const funcTpl = jquery(moduleFunctionTemplate).children()
+        const argTpl = jquery(moduleFunctionArgTemplate).children()
+        const runBtnTpl = jquery(moduleFunctionRunBtnTemplate).children()
+        const queryBtnTpl = jquery(moduleFunctionQueryBtnTemplate).children()
+        
+        container.children().remove();
+
+        if (moduleInfo && moduleInfo.script_functions && moduleInfo.script_functions.length>0) {
+            const script_functions = moduleInfo.script_functions
+ 
+            for (var i=0; i<script_functions.length; i++) {
+              const func =  script_functions[i]
+              const funcView = funcTpl.clone().show()
+              funcView.find(".func-name").text(func.name)
+
+              const args = func.args
+              const argsContainer = funcView.find(".moduleFunctionArgsForm")
+
+              for (var j=0; j<args.length; j++) {
+                const arg = args[j]
+                const argView = argTpl.clone().show()
+                argView.find(".arg-name").text(arg.name)
+                argView.find(".arg-val").attr("placeholder", arg.type_tag)
+                argsContainer.append(argView)
+              }
+
+              if (args.length>0 && args[0].type_tag=="Signer") {
+                argsContainer.append(runBtnTpl.clone().show())
+              } else {
+                argsContainer.append(queryBtnTpl.clone().show())
+              }
+
+              container.append(funcView);
+            }
+        }
+      } catch (error) {
+        throw error
+      }
+
     }
 
     /**

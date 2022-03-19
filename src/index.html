@@ -178,32 +178,25 @@
                 Call Contract function
               </h4>
               <h5 class="card-title">
-                Contract Function
+                Module ID
               </h5>
               <div class="form-outline mb-3">
-                <input id="moduleName" type="text" class="form-control form-control-lg" placeholder="Input module name, like '0x1::STC'"/>
+                <input id="moduleIdInput" type="text" class="form-control form-control-lg"
+                  value="0x8c109349c6bd91411d6bc962e080c4a3::TokenSwapScripts" />
               </div>
-              <div class="form-outline mb-3">
-                <div class="dropdown">
-                  <div class="dropdown mr-1">
-                    <button type="button" class="btn btn-secondary dropdown-toggle" id="dropdownMenuOffset" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-offset="10,20">
-                      Function Name
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuOffset">
-                      <a class="dropdown-item" href="#">Action</a>
-                      <a class="dropdown-item" href="#">Another action</a>
-                      <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                  </div>
-              </div>
-             
-              <button class="btn btn-primary btn-lg btn-block mb-3" id="tokenAddressButton" disabled>
-                Run
+              <button class="btn btn-primary btn-lg btn-block mb-3" id="resolveModuleButton">
+                Resolve Module Functions
               </button>
 
-              <p class="info-text alert alert-secondary">
-                Contract Status: <span id="contractStatus">Not clicked</span>
-              </p>
+              <h4 class="card-title">
+                Module Functions:
+              </h4>
+
+              <div id="moduleFunctionsDiv" class="list-group">
+
+
+              </div>
+
             </div>
           </div>
         </div>
@@ -395,6 +388,37 @@
     </section>
 
   </main>
+
+  <div id="moduleFunctionTemplate">
+    <a href="#" class="list-group-item list-group-item-action">
+      <div class="d-flex w-100 justify-content-between">
+        <h4 class="mb-1 func-name">transfer</h4>
+      </div>
+
+      <form class="moduleFunctionArgsForm">
+
+      </form>
+
+      <p class="info-text alert alert-warning">
+        Result: <span id="nftResult"></span>
+      </p>
+    </a>
+  </div>
+
+  <div id="moduleFunctionArgTemplate">
+    <div class="form-group">
+      <label for="inputAddress" class="arg-name">T1</label>
+      <input type="text" class="form-control arg-val" placeholder="">
+    </div>
+  </div>
+
+  <div id="moduleFunctionRunBtnTemplate">
+    <button type="submit" class="btn btn-primary">Run</button>
+  </div>
+
+  <div id="moduleFunctionQueryBtnTemplate">
+    <button type="submit" class="btn btn-primary">Query</button>
+  </div>
 
   <script src="bundle.js" defer></script>
 </body>
