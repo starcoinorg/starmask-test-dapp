@@ -150,7 +150,6 @@
               <h4 class="card-title">
                 Contract blob hex
               </h4>
-
               <div class="form-outline mb-3">
                 <textarea id="contractPayloadhex" class="form-control" rows="5" placeholder="search `payloadInHex` in index.js, generate your payloadInHex and paste it here"></textarea>
               </div>
@@ -171,6 +170,44 @@
             </div>
           </div>
         </div>
+
+        <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
+          <div class="card full-width">
+            <div class="card-body">
+              <h4 class="card-title">
+                Call Contract function
+              </h4>
+              <h5 class="card-title">
+                Contract Function
+              </h5>
+              <div class="form-outline mb-3">
+                <input id="moduleName" type="text" class="form-control form-control-lg" placeholder="Input module name, like '0x1::STC'"/>
+              </div>
+              <div class="form-outline mb-3">
+                <div class="dropdown">
+                  <div class="dropdown mr-1">
+                    <button type="button" class="btn btn-secondary dropdown-toggle" id="dropdownMenuOffset" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-offset="10,20">
+                      Function Name
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuOffset">
+                      <a class="dropdown-item" href="#">Action</a>
+                      <a class="dropdown-item" href="#">Another action</a>
+                      <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                  </div>
+              </div>
+             
+              <button class="btn btn-primary btn-lg btn-block mb-3" id="tokenAddressButton" disabled>
+                Run
+              </button>
+
+              <p class="info-text alert alert-secondary">
+                Contract Status: <span id="contractStatus">Not clicked</span>
+              </p>
+            </div>
+          </div>
+        </div>
+    
       </div>
     </section>
     <section>
