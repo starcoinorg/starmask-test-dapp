@@ -45,6 +45,10 @@ header {
 
 
 /* Call Contract Functions*/
+.moduleFunctionArgsForm {
+  padding-top: 10px
+}
+
 #moduleFunctionTemplate {
   display: none;
 }

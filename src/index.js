@@ -5,7 +5,6 @@ import { providers, utils, bcs, encoding, version as starcoinVersion } from '@st
 import { encrypt } from 'eth-sig-util'
 import { compare } from 'compare-versions';
 import jquery from 'jquery';
-import 'bootstrap';
 
 
 let starcoinProvider
@@ -45,12 +44,14 @@ const contractStatus = document.getElementById('contractStatus')
 
 // Call Contract Function
 const moduleIdInput = document.getElementById('moduleIdInput')
+const resolveResultView = document.getElementById('resolveResultView')
 const resolveModuleButton = document.getElementById('resolveModuleButton')
 const moduleFunctionsDiv = document.getElementById('moduleFunctionsDiv')
 const moduleFunctionTemplate = document.getElementById('moduleFunctionTemplate')
+const moduleFunctionTyArgTemplate = document.getElementById('moduleFunctionTyArgTemplate')
 const moduleFunctionArgTemplate = document.getElementById('moduleFunctionArgTemplate')
-const moduleFunctionRunBtnTemplate = document.getElementById('moduleFunctionRunBtnTemplate')
-const moduleFunctionQueryBtnTemplate = document.getElementById('moduleFunctionQueryBtnTemplate')
+const moduleFunctionExecuteBtnTemplate = document.getElementById('moduleFunctionExecuteBtnTemplate')
+const moduleFunctionCallBtnTemplate = document.getElementById('moduleFunctionCallBtnTemplate')
 
 // Signature Section
 const personalSign = document.getElementById('personalSign')
@@ -476,70 +477,368 @@ const initialize = async () => {
     }
 
     /**
-     * Call Contract Function
+     * Register click event for Resolve functions
      */
     resolveModuleButton.onclick = async () => {
-      const moduleId = moduleIdInput.value
-      console.log("moduleId: " + moduleId)
+      const container = jquery(moduleFunctionsDiv)
+      const resultView = jquery(resolveResultView).show()
 
-      try {
-        const result = await window.starcoin.request({
-          method: 'contract.get_code',
-          params: [moduleId],
-        })
-        console.log(result)
-      } catch (error) {
-        throw error
+      container.empty();
+
+      resolveFunctions(container, function(err, result){
+        if (err!= null) {
+          resultView.find(".tips").html('Resolve functions failed, error: ' + err)
+          return
+        }
+
+        if (result != null) {
+          resultView.hide()
+        } else {
+          resultView.find(".tips").html('Not found functions!')
+        }
+      })
+
+      return false
+    }
+
+    /**
+     * Resolve functions
+     */
+    let resolveFunctions = async (container, cb) => {
+      let moduleId = null
+      let functionId = moduleIdInput.value
+
+      let tokens = functionId.split("::")
+      if (tokens.length >= 3) {
+        moduleId = tokens[0] + "::" + tokens[1]
+      } else {
+        moduleId = functionId
+        functionId = null
       }
 
+      console.log("moduleId: " + moduleId)
+      console.log("functionId: " + functionId)
+
       try {
-        const moduleInfo = await window.starcoin.request({
-          method: 'contract.resolve_module',
-          params: [moduleId],
-        })
-        console.log("moduleInfo: ")
-        console.log(moduleInfo)
+        let script_functions = null
 
-        const container = jquery(moduleFunctionsDiv)
+        if (functionId === null) {
+          // resolve module functions
+          const moduleInfo = await window.starcoin.request({
+            method: 'contract.resolve_module',
+            params: [moduleId],
+          }).catch(err => {
+            cb && cb(err)
+          });
+
+          console.log("moduleInfo: ")
+          console.log(moduleInfo)
+
+          script_functions = moduleInfo.script_functions
+        } else {
+          // resolve single function
+          const functionoInfo = await window.starcoin.request({
+            method: 'contract.resolve_function',
+            params: [functionId],
+          }).catch(err => {
+            cb && cb(err)
+          });
+
+          console.log("functionoInfo: ")
+          console.log(functionoInfo)
+
+          script_functions = [functionoInfo]
+        }
+
         const funcTpl = jquery(moduleFunctionTemplate).children()
+        const tyArgTpl = jquery(moduleFunctionTyArgTemplate).children()
         const argTpl = jquery(moduleFunctionArgTemplate).children()
-        const runBtnTpl = jquery(moduleFunctionRunBtnTemplate).children()
-        const queryBtnTpl = jquery(moduleFunctionQueryBtnTemplate).children()
-        
-        container.children().remove();
+        const executeBtnTpl = jquery(moduleFunctionExecuteBtnTemplate).children()
+        const callBtnTpl = jquery(moduleFunctionCallBtnTemplate).children()
 
-        if (moduleInfo && moduleInfo.script_functions && moduleInfo.script_functions.length>0) {
-            const script_functions = moduleInfo.script_functions
- 
+        if (script_functions && script_functions.length>0) {
             for (var i=0; i<script_functions.length; i++) {
               const func =  script_functions[i]
               const funcView = funcTpl.clone().show()
               funcView.find(".func-name").text(func.name)
 
-              const args = func.args
               const argsContainer = funcView.find(".moduleFunctionArgsForm")
+              const funcResultView = funcView.find(".funcResult")
+
+              // TyArgs
+              const tyArgs = func.ty_args
+              const tyArgsBody = argsContainer.find(".ty_args")
+
+              for (var j=0; j<tyArgs.length; j++) {
+                const arg = tyArgs[j]
+                const argView = tyArgTpl.clone().show()
+                argView.find(".tyarg-name").text(arg.name)
+                argView.find(".tyarg-val").attr("placeholder", arg.type_tag)
+                tyArgsBody.append(argView)
+              }
+
+              // Args
+              const args = func.args
+              const argsBody = argsContainer.find(".args")
 
               for (var j=0; j<args.length; j++) {
                 const arg = args[j]
                 const argView = argTpl.clone().show()
+                
                 argView.find(".arg-name").text(arg.name)
-                argView.find(".arg-val").attr("placeholder", arg.type_tag)
-                argsContainer.append(argView)
+                argView.find(".arg-val").attr("placeholder", typeTagToText(arg.type_tag))
+                
+                argsBody.append(argView)
               }
 
+              // Buttons
               if (args.length>0 && args[0].type_tag=="Signer") {
-                argsContainer.append(runBtnTpl.clone().show())
+                // disable p0 signer
+                argsContainer.find(".arg-val").first().attr("disabled","true")
+
+                // append execute button
+                let executeBtn = executeBtnTpl.clone().show()
+                bindEventForExecuteBtn(argsContainer, executeBtn, funcResultView, moduleId, func.name)
+                argsContainer.append(executeBtn)
               } else {
-                argsContainer.append(queryBtnTpl.clone().show())
+                let callBtn = callBtnTpl.clone().show()
+                bindEventForCallBtn(argsContainer, callBtn, funcResultView, moduleId, func.name)
+                argsContainer.append(callBtn)
               }
 
               container.append(funcView);
             }
+
+            cb && cb(null, container)
+        } else {
+          cb && cb(null, null)
         }
-      } catch (error) {
-        throw error
+      } catch (err) {
+        cb && cb(err)
+      }
+    }
+
+    /**
+     * type tag to text
+     */
+    let typeTagToText = function(type_tag) {
+      if (typeof(type_tag)=='string') {
+        return type_tag
       }
 
+      let keys = Object.keys(type_tag)
+      if (keys.length >0) {
+        let key = keys[0]
+        return key + "<" + typeTagToText(type_tag[key]) + ">"
+      } else {
+        return ""
+      }
+    }
+
+    /**
+     * bind click event for execute button
+     */
+    let bindEventForExecuteBtn = function(argsContainer, executeBtn, resultView, moduleId, functionName) {
+      executeBtn.on("click", async () => {
+        let tyArgs = toTyArgs(argsContainer.find(".tyarg-val"))
+        let args = toArgs(argsContainer.find(".arg-val"))
+
+        resultView.html('Calling ' + functionName)
+
+        callFunctionWithSign(moduleId, functionName, tyArgs, args, function(err, result){
+          if (err!= null) {
+            resultView.html('Call ' + functionName + ' failed, error: ' + err)
+            return
+          }
+
+          if (result != null) {
+            resultView.html('Call ' + functionName + ' completed, transactionHash: ' + result)
+          } else {
+            resultView.html('Call ' + functionName + ' completed.')
+          }
+        })
+
+        return false
+      })
+    }
+
+    /**
+     * bind click event for call button
+     */
+    let bindEventForCallBtn = function(argsContainer, callBtn, resultView, moduleId, functionName) {
+      callBtn.on("click", async () => {
+        let tyArgs = toTyArgs(argsContainer.find(".tyarg-val"))
+        let args = toJsonArgs(argsContainer.find(".arg-val"))
+        
+        resultView.html('Calling ' + functionName)
+
+        callFunction(moduleId, functionName, tyArgs, args, function(err, result){
+          if (err!= null) {
+            resultView.html('Call ' + functionName + ' failed, error: ' + err)
+            return
+          }
+
+          if (result != null) {
+            resultView.html('Call ' + functionName + ' completed, result: ' + result)
+          } else {
+            resultView.html('Call ' + functionName + ' completed.')
+          }
+        })
+
+        return false
+      })
+    }
+
+    let toTyArgs = function(inputEles) {
+      let tyArgs = []
+      inputEles.each(function(){
+        tyArgs.push(jquery(this).val())
+      })
+      return tyArgs
+    }
+
+    let toArgs = function(inputEles) {
+      let argTypes = []
+      let args = []
+
+      inputEles.each(function(){
+        let argEle = jquery(this)
+        let argType = argEle.attr("placeholder").toLowerCase()
+        let argVal = argEle.val()
+
+        argTypes.push(argType)
+
+        // Move has few built-in primitive types to represent numbers, 
+        // addresses and boolean values: integers (u8, u64, u128), boolean and address
+        if (argType.startsWith("u")) {
+          let val = parseInt(argVal) 
+          args.push(val)
+        } else if (argType == "bool") {
+          let val = JSON.parse(argVal)
+          args.push(val)
+        } else {
+          args.push(argVal)
+        }
+      })
+
+      // Remove the first Signer type
+      if (argTypes[0] === 'signer') {
+        argTypes.shift();
+        args.shift()
+      }
+
+      return args
+    }
+
+    let toJsonArgs = function(inputEles) {
+      let argTypes = []
+      let args = []
+
+      inputEles.each(function(){
+        let argEle = jquery(this)
+        let argType = argEle.attr("placeholder").toLowerCase()
+        let argVal = argEle.val()
+
+        argTypes.push(argType)
+
+        // Move has few built-in primitive types to represent numbers, 
+        // addresses and boolean values: integers (u8, u64, u128), boolean and address
+        if (argType.startsWith("u")) {
+          if (argType == "u8") {
+            let val = parseInt(argVal) 
+            args.push(val)
+          } else {
+            args.push(`${argVal}${argType}`)
+          }
+        } else if (argType == "bool") {
+          let val = JSON.parse(argVal)
+          args.push(val)
+        } else if (argType == "vector<u8>") {
+          args.push(`x"${argVal}"`)
+        } else {
+          args.push(argVal)
+        }
+      })
+
+      // Remove the first Signer type
+      if (argTypes[0] === 'signer') {
+        argTypes.shift();
+        args.shift()
+      }
+
+      return args
+    }
+
+    /**
+     * Call function with sign
+     */
+    let callFunctionWithSign = async (moduleId, functionName, tyArgs, args, cb) => {
+      const functionId = moduleId + "::" + functionName
+
+      try {
+        const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
+        console.log({ functionId, tyArgs, args, nodeUrl })
+
+        const scriptFunction = await utils.tx.encodeScriptFunctionByResolve(functionId, tyArgs, args, nodeUrl)
+
+        const payloadInHex = (function () {
+          const se = new bcs.BcsSerializer()
+          scriptFunction.serialize(se)
+          return hexlify(se.getBytes())
+        })()
+        console.log({ payloadInHex })
+
+        const txParams = {
+          data: payloadInHex,
+        }
+
+        const transactionHash = await starcoinProvider.getSigner()
+          .sendUncheckedTransaction(txParams)
+          .catch(err => {
+            cb && cb(err)
+          });
+        
+        console.log({ transactionHash })
+        cb && cb(null, transactionHash)
+      } catch (err) {
+        cb && cb(err)
+      }
+    }
+
+    /**
+     * Call function
+     */
+    let callFunction = async (moduleId, functionName, tyArgs, args, cb) => {
+      const functionId = moduleId + "::" + functionName
+
+      try {
+        console.log({ functionId, tyArgs, args})
+
+        const result = await new Promise((resolve, reject) => {
+          return starcoinProvider.send(
+            'contract.call_v2',
+            [
+              {
+                function_id: functionId,
+                type_args: tyArgs,
+                args,
+              },
+            ],
+          ).then((result) => {
+            if (result && Array.isArray(result) && result.length) {
+              resolve(result[0])
+            } else {
+              reject(new Error('fetch failed'))
+            }
+          }).catch(err => {
+            cb && cb(err.message)
+          });
+        });
+
+        cb && cb(null, result)
+      } catch (err) {
+        cb && cb(err.message)
+      }
     }
 
     /**

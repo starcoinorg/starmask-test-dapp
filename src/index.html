@@ -178,19 +178,23 @@
                 Call Contract function
               </h4>
               <h5 class="card-title">
-                Module ID
+                Module ID/Function ID
               </h5>
               <div class="form-outline mb-3">
                 <input id="moduleIdInput" type="text" class="form-control form-control-lg"
-                  value="0x8c109349c6bd91411d6bc962e080c4a3::TokenSwapScripts" />
+                  value="0x1::NFTGalleryScripts" />
               </div>
               <button class="btn btn-primary btn-lg btn-block mb-3" id="resolveModuleButton">
-                Resolve Module Functions
+                Resolve Functions
               </button>
 
               <h4 class="card-title">
                 Module Functions:
               </h4>
+
+              <p id="resolveResultView" class="info-text alert alert-warning">
+                Result: <span class="tips"></span>
+              </p>
 
               <div id="moduleFunctionsDiv" class="list-group">
 
@@ -390,19 +394,36 @@
   </main>
 
   <div id="moduleFunctionTemplate">
-    <a href="#" class="list-group-item list-group-item-action">
+    <div class="list-group-item list-group-item-action">
       <div class="d-flex w-100 justify-content-between">
         <h4 class="mb-1 func-name">transfer</h4>
       </div>
 
       <form class="moduleFunctionArgsForm">
+        <div class="card" class="w-100">
+          <div class="card-body ty_args">
+            <h5 class="card-title">TyArgs:</h5>
+          </div>
+        </div>
 
+        <div class="card" class="w-100">
+          <div class="card-body args">
+            <h5 class="card-title">Args:</h5>
+          </div>
+        </div>
       </form>
 
       <p class="info-text alert alert-warning">
-        Result: <span id="nftResult"></span>
+        Result: <span class="funcResult"></span>
       </p>
-    </a>
+    </div>
+  </div>
+
+  <div id="moduleFunctionTyArgTemplate">
+    <div class="form-group">
+      <label for="inputAddress" class="tyarg-name">T1</label>
+      <input type="text" class="form-control tyarg-val" placeholder="">
+    </div>
   </div>
 
   <div id="moduleFunctionArgTemplate">
@@ -412,12 +433,12 @@
     </div>
   </div>
 
-  <div id="moduleFunctionRunBtnTemplate">
-    <button type="submit" class="btn btn-primary">Run</button>
+  <div id="moduleFunctionExecuteBtnTemplate">
+    <button type="button" class="btn btn-primary">Execute</button>
   </div>
 
-  <div id="moduleFunctionQueryBtnTemplate">
-    <button type="submit" class="btn btn-primary">Query</button>
+  <div id="moduleFunctionCallBtnTemplate">
+    <button type="button" class="btn btn-primary">Call</button>
   </div>
 
   <script src="bundle.js" defer></script>
