@@ -42,3 +42,25 @@ header {
 #encryptMessageInput {
   margin-bottom: 1rem;
 }
+
+
+/* Call Contract Functions*/
+.moduleFunctionArgsForm {
+  padding-top: 10px
+}
+
+#moduleFunctionTemplate {
+  display: none;
+}
+
+#moduleFunctionArgTemplate {
+  display: none;
+}
+
+#moduleFunctionRunBtnTemplate {
+  display: none;
+}
+
+#moduleFunctionQueryBtnTemplate {
+  display: none;
+}

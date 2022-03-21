@@ -150,7 +150,6 @@
               <h4 class="card-title">
                 Contract blob hex
               </h4>
-
               <div class="form-outline mb-3">
                 <textarea id="contractPayloadhex" class="form-control" rows="5" placeholder="search `payloadInHex` in index.js, generate your payloadInHex and paste it here"></textarea>
               </div>
@@ -171,6 +170,41 @@
             </div>
           </div>
         </div>
+
+        <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
+          <div class="card full-width">
+            <div class="card-body">
+              <h4 class="card-title">
+                Call Contract function
+              </h4>
+              <h5 class="card-title">
+                Module ID/Function ID
+              </h5>
+              <div class="form-outline mb-3">
+                <input id="moduleIdInput" type="text" class="form-control form-control-lg"
+                  value="0x1::NFTGalleryScripts" />
+              </div>
+              <button class="btn btn-primary btn-lg btn-block mb-3" id="resolveModuleButton">
+                Resolve Functions
+              </button>
+
+              <h4 class="card-title">
+                Module Functions:
+              </h4>
+
+              <p id="resolveResultView" class="info-text alert alert-warning">
+                Result: <span class="tips"></span>
+              </p>
+
+              <div id="moduleFunctionsDiv" class="list-group">
+
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+    
       </div>
     </section>
     <section>
@@ -358,6 +392,54 @@
     </section>
 
   </main>
+
+  <div id="moduleFunctionTemplate">
+    <div class="list-group-item list-group-item-action">
+      <div class="d-flex w-100 justify-content-between">
+        <h4 class="mb-1 func-name">transfer</h4>
+      </div>
+
+      <form class="moduleFunctionArgsForm">
+        <div class="card" class="w-100">
+          <div class="card-body ty_args">
+            <h5 class="card-title">TyArgs:</h5>
+          </div>
+        </div>
+
+        <div class="card" class="w-100">
+          <div class="card-body args">
+            <h5 class="card-title">Args:</h5>
+          </div>
+        </div>
+      </form>
+
+      <p class="info-text alert alert-warning">
+        Result: <span class="funcResult"></span>
+      </p>
+    </div>
+  </div>
+
+  <div id="moduleFunctionTyArgTemplate">
+    <div class="form-group">
+      <label for="inputAddress" class="tyarg-name">T1</label>
+      <input type="text" class="form-control tyarg-val" placeholder="">
+    </div>
+  </div>
+
+  <div id="moduleFunctionArgTemplate">
+    <div class="form-group">
+      <label for="inputAddress" class="arg-name">T1</label>
+      <input type="text" class="form-control arg-val" placeholder="">
+    </div>
+  </div>
+
+  <div id="moduleFunctionExecuteBtnTemplate">
+    <button type="button" class="btn btn-primary">Execute</button>
+  </div>
+
+  <div id="moduleFunctionCallBtnTemplate">
+    <button type="button" class="btn btn-primary">Call</button>
+  </div>
 
   <script src="bundle.js" defer></script>
 </body>
