@@ -423,13 +423,29 @@ const initialize = async () => {
         console.log({ txParams })
         const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
         console.log({ transactionHash })
+        const MAX_CONFIRMED_NODES = 6
+        let confirmedNumber = 0
+        contractStatus2.innerHTML = `Transaction is waiting confirmed `
+        let timer = setInterval(async () => {
+          const txnInfo = await starcoinProvider.getTransactionInfo(transactionHash)
+          console.log({ txnInfo })
+          if (txnInfo.status === 'Executed') {
+            confirmedNumber++
+            console.log({ confirmedNumber })
+            contractStatus2.innerHTML = `Transaction ${ confirmedNumber } confirmed `
+            if (confirmedNumber === MAX_CONFIRMED_NODES) {
+              clearInterval(timer)
+              contractStatus2.innerHTML = 'Call Completed'
+              callContractButton.disabled = false
+            }
+          }
+        }, 3000)
+
       } catch (error) {
         contractStatus2.innerHTML = 'Call Failed'
         callContractButton.disabled = false
         throw error
       }
-      contractStatus2.innerHTML = 'Call Completed'
-      callContractButton.disabled = false
     }
 
     /**
