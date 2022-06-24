@@ -424,23 +424,20 @@ const initialize = async () => {
         const transactionHash = await starcoinProvider.getSigner().sendUncheckedTransaction(txParams)
         console.log({ transactionHash })
         const MAX_CONFIRMED_NODES = 6
-        let confirmedNumber = 0
         contractStatus2.innerHTML = `Transaction is waiting confirmed `
         let timer = setInterval(async () => {
           const txnInfo = await starcoinProvider.getTransactionInfo(transactionHash)
           console.log({ txnInfo })
-          if (txnInfo.status === 'Executed') {
-            confirmedNumber++
-            console.log({ confirmedNumber })
-            contractStatus2.innerHTML = `Transaction ${ confirmedNumber } confirmed `
-            if (confirmedNumber === MAX_CONFIRMED_NODES) {
-              clearInterval(timer)
-              contractStatus2.innerHTML = 'Call Completed'
-              callContractButton.disabled = false
+          console.log(txnInfo.confirmations)
+          if (txnInfo.status === "Executed") {
+            contractStatus2.innerHTML = `Transaction ${ txnInfo.confirmations } confirmed `
+            if (txnInfo.confirmations >= MAX_CONFIRMED_NODES) {
+              clearInterval(timer);
+              contractStatus2.innerHTML = "Call Completed";
+              callContractButton.disabled = false;
             }
           }
         }, 3000)
-
       } catch (error) {
         contractStatus2.innerHTML = 'Call Failed'
         callContractButton.disabled = false
@@ -501,8 +498,8 @@ const initialize = async () => {
 
       container.empty();
 
-      resolveFunctions(container, function(err, result){
-        if (err!= null) {
+      resolveFunctions(container, function (err, result) {
+        if (err != null) {
           resultView.find(".tips").html('Resolve functions failed, error: ' + err)
           return
         }
@@ -572,60 +569,60 @@ const initialize = async () => {
         const executeBtnTpl = jquery(moduleFunctionExecuteBtnTemplate).children()
         const callBtnTpl = jquery(moduleFunctionCallBtnTemplate).children()
 
-        if (script_functions && script_functions.length>0) {
-            for (var i=0; i<script_functions.length; i++) {
-              const func =  script_functions[i]
-              const funcView = funcTpl.clone().show()
-              funcView.find(".func-name").text(func.name)
+        if (script_functions && script_functions.length > 0) {
+          for (var i = 0; i < script_functions.length; i++) {
+            const func = script_functions[i]
+            const funcView = funcTpl.clone().show()
+            funcView.find(".func-name").text(func.name)
 
-              const argsContainer = funcView.find(".moduleFunctionArgsForm")
-              const funcResultView = funcView.find(".funcResult")
+            const argsContainer = funcView.find(".moduleFunctionArgsForm")
+            const funcResultView = funcView.find(".funcResult")
 
-              // TyArgs
-              const tyArgs = func.ty_args
-              const tyArgsBody = argsContainer.find(".ty_args")
+            // TyArgs
+            const tyArgs = func.ty_args
+            const tyArgsBody = argsContainer.find(".ty_args")
 
-              for (var j=0; j<tyArgs.length; j++) {
-                const arg = tyArgs[j]
-                const argView = tyArgTpl.clone().show()
-                argView.find(".tyarg-name").text(arg.name)
-                argView.find(".tyarg-val").attr("placeholder", arg.type_tag)
-                tyArgsBody.append(argView)
-              }
-
-              // Args
-              const args = func.args
-              const argsBody = argsContainer.find(".args")
-
-              for (var j=0; j<args.length; j++) {
-                const arg = args[j]
-                const argView = argTpl.clone().show()
-                
-                argView.find(".arg-name").text(arg.name)
-                argView.find(".arg-val").attr("placeholder", typeTagToText(arg.type_tag))
-                
-                argsBody.append(argView)
-              }
-
-              // Buttons
-              if (args.length>0 && args[0].type_tag=="Signer") {
-                // disable p0 signer
-                argsContainer.find(".arg-val").first().attr("disabled","true")
-
-                // append execute button
-                let executeBtn = executeBtnTpl.clone().show()
-                bindEventForExecuteBtn(argsContainer, executeBtn, funcResultView, moduleId, func.name)
-                argsContainer.append(executeBtn)
-              } else {
-                let callBtn = callBtnTpl.clone().show()
-                bindEventForCallBtn(argsContainer, callBtn, funcResultView, moduleId, func.name)
-                argsContainer.append(callBtn)
-              }
-
-              container.append(funcView);
+            for (var j = 0; j < tyArgs.length; j++) {
+              const arg = tyArgs[j]
+              const argView = tyArgTpl.clone().show()
+              argView.find(".tyarg-name").text(arg.name)
+              argView.find(".tyarg-val").attr("placeholder", arg.type_tag)
+              tyArgsBody.append(argView)
             }
 
-            cb && cb(null, container)
+            // Args
+            const args = func.args
+            const argsBody = argsContainer.find(".args")
+
+            for (var j = 0; j < args.length; j++) {
+              const arg = args[j]
+              const argView = argTpl.clone().show()
+
+              argView.find(".arg-name").text(arg.name)
+              argView.find(".arg-val").attr("placeholder", typeTagToText(arg.type_tag))
+
+              argsBody.append(argView)
+            }
+
+            // Buttons
+            if (args.length > 0 && args[0].type_tag == "Signer") {
+              // disable p0 signer
+              argsContainer.find(".arg-val").first().attr("disabled", "true")
+
+              // append execute button
+              let executeBtn = executeBtnTpl.clone().show()
+              bindEventForExecuteBtn(argsContainer, executeBtn, funcResultView, moduleId, func.name)
+              argsContainer.append(executeBtn)
+            } else {
+              let callBtn = callBtnTpl.clone().show()
+              bindEventForCallBtn(argsContainer, callBtn, funcResultView, moduleId, func.name)
+              argsContainer.append(callBtn)
+            }
+
+            container.append(funcView);
+          }
+
+          cb && cb(null, container)
         } else {
           cb && cb(null, null)
         }
@@ -637,13 +634,13 @@ const initialize = async () => {
     /**
      * type tag to text
      */
-    let typeTagToText = function(type_tag) {
-      if (typeof(type_tag)=='string') {
+    let typeTagToText = function (type_tag) {
+      if (typeof (type_tag) == 'string') {
         return type_tag
       }
 
       let keys = Object.keys(type_tag)
-      if (keys.length >0) {
+      if (keys.length > 0) {
         let key = keys[0]
         return key + "<" + typeTagToText(type_tag[key]) + ">"
       } else {
@@ -654,15 +651,15 @@ const initialize = async () => {
     /**
      * bind click event for execute button
      */
-    let bindEventForExecuteBtn = function(argsContainer, executeBtn, resultView, moduleId, functionName) {
+    let bindEventForExecuteBtn = function (argsContainer, executeBtn, resultView, moduleId, functionName) {
       executeBtn.on("click", async () => {
         let tyArgs = toTyArgs(argsContainer.find(".tyarg-val"))
         let args = toArgs(argsContainer.find(".arg-val"))
 
         resultView.html('Calling ' + functionName)
 
-        callFunctionWithSign(moduleId, functionName, tyArgs, args, function(err, result){
-          if (err!= null) {
+        callFunctionWithSign(moduleId, functionName, tyArgs, args, function (err, result) {
+          if (err != null) {
             resultView.html('Call ' + functionName + ' failed, error: ' + err)
             return
           }
@@ -681,15 +678,15 @@ const initialize = async () => {
     /**
      * bind click event for call button
      */
-    let bindEventForCallBtn = function(argsContainer, callBtn, resultView, moduleId, functionName) {
+    let bindEventForCallBtn = function (argsContainer, callBtn, resultView, moduleId, functionName) {
       callBtn.on("click", async () => {
         let tyArgs = toTyArgs(argsContainer.find(".tyarg-val"))
         let args = toJsonArgs(argsContainer.find(".arg-val"))
-        
+
         resultView.html('Calling ' + functionName)
 
-        callFunction(moduleId, functionName, tyArgs, args, function(err, result){
-          if (err!= null) {
+        callFunction(moduleId, functionName, tyArgs, args, function (err, result) {
+          if (err != null) {
             resultView.html('Call ' + functionName + ' failed, error: ' + err)
             return
           }
@@ -705,19 +702,19 @@ const initialize = async () => {
       })
     }
 
-    let toTyArgs = function(inputEles) {
+    let toTyArgs = function (inputEles) {
       let tyArgs = []
-      inputEles.each(function(){
+      inputEles.each(function () {
         tyArgs.push(jquery(this).val())
       })
       return tyArgs
     }
 
-    let toArgs = function(inputEles) {
+    let toArgs = function (inputEles) {
       let argTypes = []
       let args = []
 
-      inputEles.each(function(){
+      inputEles.each(function () {
         let argEle = jquery(this)
         let argType = argEle.attr("placeholder").toLowerCase()
         let argVal = argEle.val()
@@ -727,7 +724,7 @@ const initialize = async () => {
         // Move has few built-in primitive types to represent numbers, 
         // addresses and boolean values: integers (u8, u64, u128), boolean and address
         if (argType.startsWith("u")) {
-          let val = parseInt(argVal) 
+          let val = parseInt(argVal)
           args.push(val)
         } else if (argType == "bool") {
           let val = JSON.parse(argVal)
@@ -746,11 +743,11 @@ const initialize = async () => {
       return args
     }
 
-    let toJsonArgs = function(inputEles) {
+    let toJsonArgs = function (inputEles) {
       let argTypes = []
       let args = []
 
-      inputEles.each(function(){
+      inputEles.each(function () {
         let argEle = jquery(this)
         let argType = argEle.attr("placeholder").toLowerCase()
         let argVal = argEle.val()
@@ -761,16 +758,16 @@ const initialize = async () => {
         // addresses and boolean values: integers (u8, u64, u128), boolean and address
         if (argType.startsWith("u")) {
           if (argType == "u8") {
-            let val = parseInt(argVal) 
+            let val = parseInt(argVal)
             args.push(val)
           } else {
-            args.push(`${argVal}${argType}`)
+            args.push(`${ argVal }${ argType }`)
           }
         } else if (argType == "bool") {
           let val = JSON.parse(argVal)
           args.push(val)
         } else if (argType == "vector<u8>") {
-          args.push(`x"${argVal}"`)
+          args.push(`x"${ argVal }"`)
         } else {
           args.push(argVal)
         }
@@ -813,7 +810,7 @@ const initialize = async () => {
           .catch(err => {
             cb && cb(err)
           });
-        
+
         console.log({ transactionHash })
         cb && cb(null, transactionHash)
       } catch (err) {
@@ -828,7 +825,7 @@ const initialize = async () => {
       const functionId = moduleId + "::" + functionName
 
       try {
-        console.log({ functionId, tyArgs, args})
+        console.log({ functionId, tyArgs, args })
 
         const result = await new Promise((resolve, reject) => {
           return starcoinProvider.send(
