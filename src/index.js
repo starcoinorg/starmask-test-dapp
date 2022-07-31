@@ -119,16 +119,16 @@ const airdropRecords = [
 
 const airdropFunctionIdMap = {
   '1': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // main
-  '2': '', // proxima
   '251': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // barnard
+  '252': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // proxima
   '253': '0xb987F1aB0D7879b2aB421b98f96eFb44::MerkleDistributorScript::claim_script', // halley
   '254': '', // localhost
 }
 
 const nodeUrlMap = {
   '1': 'https://main-seed.starcoin.org',
-  '2': 'https://proxima-seed.starcoin.org',
   '251': 'https://barnard-seed.starcoin.org',
+  '252': 'https://proxima-seed.starcoin.org',
   '253': 'https://halley-seed.starcoin.org',
   '254': 'http://localhost:9850',
 }
